@@ -1,10 +1,10 @@
 
 .rss-feed {
     
-    height: 100vh;
+    min-height: 100vh;
     .loading {
         
-        height: 100vh;
+        min-height: 100vh;
         h3 {
             line-height: 100vh;
             text-align: center;
@@ -13,6 +13,7 @@
 
     .card {
         small {
+            
             padding: 5px;
             position: absolute;
             top: -8px;
@@ -20,6 +21,18 @@
             color: white;
             background-color: rgba(0,0,0,0.5);
             border-radius: 0 5px 0 0;
+            z-index: 2;
+        }
+
+        div {
+            
+            overflow: hidden;
+            img {
+                transition: transform 0.3s;
+                &:hover {
+                    transform: scale(1.2);
+                }
+            }
         }
     }
 }

@@ -35,7 +35,6 @@ export const RSSFeed = () => {
         return {title, description, img: {url: img_url, alt: img_alt}, link, date};
     });
       
-      console.log (xmlDoc);
       setNews (lastNews);
     };
 
@@ -63,12 +62,14 @@ export const RSSFeed = () => {
                           return (
                               <div className="col-6 p-3" key={item.link}>
                                 <div className='card'>
-                                  <small className='float-end mt-2'>{item.date}</small>
-                                  <img src={item.img.url} className="card-img-top" alt={item.img.alt} />
+                                  <div>
+                                    <small className='float-end mt-2'>{item.date}</small>
+                                    <img src={item.img.url} className="card-img-top" alt={item.img.alt} />
+                                  </div>
                                   <div className="card-body">
                                     <h3 className="card-title">{item.title}</h3>
                                     <p className="card-text mb-0" dangerouslySetInnerHTML={{__html: item.description}}></p>
-                                    <a href={item.link} className="btn btn-primary float-end mt-4" target="_blank" rel="noreferrer">Go to Gallery</a>
+                                    <a href={item.link} className="btn btn-primary float-end mt-2" target="_blank" rel="noreferrer">Go to Gallery</a>
                                   </div>
                                 </div>
                               </div>                        
