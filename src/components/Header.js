@@ -1,16 +1,22 @@
 import React from 'react'
+import {NavLink} from 'react-router-dom'
 
 export const Header = () => {
   return (
-    <div className='container'>
-        <div className='row'>
-            <div className='col-sm-8 text-start'>
-                <strong>RSS Reader</strong>
-            </div>
-            <div className='col-sm-4 text-end'>
-                Botonera
-            </div>
+    <nav className="navbar sticky-top navbar-expand-lg navbar-dark bg-primary">
+      <div className="container-lg">
+        <NavLink to="/" className="navbar-brand">RSS Tennis Feed</NavLink>
+        <div className="collapse navbar-collapse" id="navbarRSSFeed">
+          <div className="navbar-nav">
+            <NavLink to="/news-feed" className={({isActive}) => ('nav-link ' + (isActive ? "active" : ''))}>News</NavLink>
+            <NavLink to="/photos-feed" className={({isActive}) => ('nav-link ' + (isActive ? "active" : ''))}>Photos</NavLink>
+            <NavLink to="/results-feed" className={({isActive}) => ('nav-link ' + (isActive ? "active" : ''))}>Results</NavLink>
+          </div>
         </div>
-    </div>
+        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarRSSFeed" aria-controls="navbarRSSFeed" aria-expanded="false" aria-label="Toggle navigation">
+          <span className="navbar-toggler-icon"></span>
+        </button>
+      </div>
+    </nav>
   )
 }
