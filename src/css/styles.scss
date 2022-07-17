@@ -34,6 +34,26 @@
                 }
             }
         }
+
+        .bookmark {
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            color: black;
+
+            &:hover {
+                color: gold;
+                cursor: pointer;
+            }
+        }
+
+        .bookmark.selected {
+            color: gold;
+
+            &:hover {
+                color: black;
+            }
+        }
     }
 }
 
