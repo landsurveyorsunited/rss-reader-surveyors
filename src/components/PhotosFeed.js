@@ -7,6 +7,7 @@ export const PhotosFeed = () => {
   const feed_url_photos_WTA = 'https://www.wtatennis.com/rss-photos.xml';
 
   const [loading, setLoading]                       = useState (true);
+  const [initialLoad, setInitialLoad]               = useState (true);
   const [all_photos, setAllPhotos]                  = useState ([]);
   const [photos_filtered, setPhotosFiltered]        = useState ([]);
   const [photos_in_view, setPhotosInView]           = useState ([]);
@@ -47,7 +48,13 @@ export const PhotosFeed = () => {
         return {id, title, description, img: {url: img_url, alt: img_alt}, link, date: date_modified, bookmark: false};
       });
 
-      setAllPhotos (all_photos_wta);
+
+      setTimeout ( () => {
+        
+        setAllPhotos (all_photos_wta);
+        setInitialLoad (false);
+      }, 2000);
+
     };
     
     getAllPhotos ();
@@ -56,6 +63,7 @@ export const PhotosFeed = () => {
   
   useEffect ( () => {
 
+    setLoading (true);
     if (Array.isArray (photos_filtered)) {
       
       setTotalPages (Math.ceil (photos_filtered.length / results_by_page));
@@ -64,7 +72,6 @@ export const PhotosFeed = () => {
       setTotalPages (0);
       setPhotosInView ([]);
     }
-    setLoading (false);
     
   }, [photos_filtered, results_by_page, page]);
 
@@ -76,6 +83,10 @@ export const PhotosFeed = () => {
     else setPhotosFiltered (all_photos);
   }, [show_only_bookmarks, all_photos])
   
+
+  useEffect ( () => {
+    setLoading (false);
+  }, [photos_filtered])
 
   const toggleBookmark = (id) => {
     
@@ -106,7 +117,7 @@ export const PhotosFeed = () => {
   return (
     <div className='rss-feed rss-photo-feed'>
       {
-          ! loading && (
+          (! initialLoad && ! loading) && (
             <div className='container-lg'>
               <div className="row mt-3 justify-content-between">
                 <div className='col-md-4'>
@@ -133,7 +144,7 @@ export const PhotosFeed = () => {
           )
       }
       {
-          loading && (
+          (initialLoad || loading) && (
             <div className="loading">
               <h3>Loading RSS Feeds...</h3>
             </div>
@@ -147,7 +158,7 @@ export const PhotosFeed = () => {
           )
       }
       {
-          ! loading && photos_in_view.length > 0 && (
+          (! initialLoad && ! loading) && photos_in_view.length > 0 && (
             <div className='container-lg'>
               <div className="row mt-3">
                   {
@@ -178,7 +189,7 @@ export const PhotosFeed = () => {
           )
       }
       {
-        ! loading && (total_pages > 0)  && (
+        (! initialLoad && ! loading) && (total_pages > 0)  && (
           <div className='container-md'>
             <div className="row">
                 <div className="col-12">
