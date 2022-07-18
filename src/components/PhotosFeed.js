@@ -5,15 +5,15 @@ export const PhotosFeed = () => {
   const CORS_PROXY          = "https://cors-anywhere.herokuapp.com/";
   const feed_url_photos_WTA = 'https://www.wtatennis.com/rss-photos.xml';
 
-  const [loading, setLoading]             = useState (true);
-  const [all_photos, setAllPhotos]        = useState ([]);
-  const [photosInView, setPhotosInView]   = useState ([]);
-  const [photos_by_page, setPhotosByPage] = useState (12);
-  const [page, setPage]                   = useState (0);
-  const [total_pages, setTotalPages]      = useState (0);
+  const [loading, setLoading]                       = useState (true);
+  const [all_photos, setAllPhotos]                  = useState ([]);
+  const [photos_filtered, setPhotosFiltered]        = useState ([]);
+  const [photos_in_view, setPhotosInView]           = useState ([]);
+  const [results_by_page, setResultsByPage]         = useState (12);
+  const [page, setPage]                             = useState (1);
+  const [total_pages, setTotalPages]                = useState (0);
   const [show_only_bookmarks, setShowOnlyBookmarks] = useState (false);
   
-
   useEffect (() => {
     
     const getAllPhotos = async () => {
@@ -22,7 +22,7 @@ export const PhotosFeed = () => {
       const wta_text   = await fetch(CORS_PROXY + feed_url_photos_WTA).then(r => r.text());
       const wta_xmlDoc = new DOMParser().parseFromString (wta_text, "text/xml");
       
-      const allPhotosWTA = Array.from (wta_xmlDoc.querySelectorAll ("item")).map ( (item, index) => {
+      const all_photos_wta = Array.from (wta_xmlDoc.querySelectorAll ("item")).map ( (item, index) => {
         
         let id = 'wta-' + index;
 
@@ -44,7 +44,7 @@ export const PhotosFeed = () => {
         return {id, title, description, img: {url: img_url, alt: img_alt}, link, date, bookmark: false};
       });
 
-      setAllPhotos (allPhotosWTA);
+      setAllPhotos (all_photos_wta);
     };
     
     getAllPhotos ();
@@ -52,18 +52,27 @@ export const PhotosFeed = () => {
   
   
   useEffect ( () => {
+
+    if (Array.isArray (photos_filtered)) {
+      
+      setTotalPages (Math.ceil (photos_filtered.length / results_by_page));
+      setPhotosInView (photos_filtered.slice ( (page -1) * results_by_page, page * results_by_page));
+    } else {
+      setTotalPages (0);
+      setPhotosInView ([]);
+    }
+    setLoading (false);
     
-    setTotalPages (Math.ceil (all_photos.length / photos_by_page));
-    setPage (1);
-  }, [all_photos, photos_by_page]);
-  
+  }, [photos_filtered, results_by_page, page]);
+
   
   useEffect ( () => {
     
-    setPhotosInView (all_photos.slice ((page - 1) * photos_by_page, page * photos_by_page ));
-    setLoading (false);
-  }, [all_photos, page, photos_by_page]);
-
+    setLoading (true);
+    if (show_only_bookmarks) setPhotosFiltered (all_photos.filter (item => item.bookmark));
+    else setPhotosFiltered (all_photos);
+  }, [show_only_bookmarks, all_photos])
+  
 
   const toggleBookmark = (id) => {
     
@@ -78,41 +87,48 @@ export const PhotosFeed = () => {
       return oldItem;
     }));
 
+    setPhotosFiltered (prev => prev.map (oldItem => {
+      if (oldItem.id === id) {
+        return {
+          ...oldItem,
+          bookmark: !oldItem.bookmark
+        }
+      }
+  
+      return oldItem;
+    }));
   }
 
-  const toggleShowOnlyBookmarks = () => {
-
-    setLoading (true);
-    setShowOnlyBookmarks (! show_only_bookmarks);
-    if (show_only_bookmarks) setPhotosInView (all_photos);
-    else setPhotosInView (all_photos.filter (item => item.bookmark));
-    setLoading (false);
-  }
-
-
-  const printPages = () => {
-
-    let list = [];
-    for (let num_page = 1; num_page <= total_pages; num_page++) {
-        list.push (
-          <li className="page-item" key={num_page}>
-              <button className={"page-link" + ((num_page === page) ? ' active' : '')} onClick={() => setPage (num_page)}>{num_page}</button>
-          </li>
-        );
-    }
-    
-    return list;
-  };
-
-  const updatePhotosByPage = (e) => {
-
-    setLoading (true); 
-    setPhotosByPage (e.currentTarget.value); 
-    setPage (1);
-  };
 
   return (
     <div className='rss-feed rss-photo-feed'>
+      {
+          ! loading && (
+            <div className='container-lg'>
+              <div className="row mt-3 justify-content-between">
+                <div className='col-md-4'>
+                    <button className="btn btn-block btn-outline-primary" onClick={() => setShowOnlyBookmarks (current => !current) }>{show_only_bookmarks ? "Show All Items" : "Show Only Bookmarks"} <i className={"fa-solid fa-star"} ></i></button>
+                </div>
+                { 
+                  photos_in_view.length > 0 && (
+                    <div className='col-md-4 mt-3 mt-md-0'>
+                      <div className='row justify-content-end'>
+                        <label htmlFor="resultsbypage" className="col-md-7 col-lg-8 text-md-end col-form-label">Results by page</label>
+                        <div className="col-md-5 col-lg-4">
+                          <select name="resultsbypage" id="resultsbypage" className="form-select" onChange={e => setResultsByPage (parseInt (e.currentTarget.value))} value={results_by_page}>
+                            <option value="12">12</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                }
+              </div>
+            </div>
+          )
+      }
       {
           loading && (
             <div className="loading">
@@ -121,33 +137,18 @@ export const PhotosFeed = () => {
           )
       }
       {
-          ! loading && photosInView.length <= 0 && (
+          ! loading && photos_in_view.length <= 0 && (
             <div className="loading">
-              <h3>RSS Not found.</h3>
+              <h3>No items to show.</h3>
             </div>
           )
       }
       {
-          ! loading && photosInView.length > 0 && (
+          ! loading && photos_in_view.length > 0 && (
             <div className='container-lg'>
-              <div className="row mt-3 justify-content-between">
-                <div className='col-md-4'>
-                  <div class="d-grid gap-2">
-                    <button className="btn btn-block btn-outline-primary" onClick={() => toggleShowOnlyBookmarks () }>{show_only_bookmarks ? "Show All Items" : "Show Only Bookmarks"}</button>
-                  </div>
-                </div>
-                <div className='col-md-3'>
-                  <select className="form-select" aria-label="" onChange={updatePhotosByPage}>
-                    <option value="12" default>Results by page</option>
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="0">50</option>
-                  </select>
-                </div>
-              </div>
               <div className="row mt-3">
                   {
-                      photosInView.map ( (item) => {
+                      photos_in_view.map ( (item) => {
                           if (show_only_bookmarks && ! item.bookmark) return '';
 
                           return (
@@ -162,7 +163,7 @@ export const PhotosFeed = () => {
                                   <div className="card-body">
                                     <h3 className="card-title">{item.title}</h3>
                                     <p className="card-text mb-0" dangerouslySetInnerHTML={{__html: item.description}}></p>
-                                    <a href={item.link} className="btn btn-primary float-end mt-2" target="_blank" rel="noreferrer">Go to WTA Gallery</a>
+                                    <a href={item.link} className="btn btn-primary float-end mt-2" target="_blank" rel="noreferrer">Go to Gallery <i className="fa-solid fa-arrow-up-right-from-square"></i></a>
                                   </div>
                                 </div>
                               </div>                        
@@ -181,13 +182,21 @@ export const PhotosFeed = () => {
                     <nav aria-label="Page navigation">
                         <ul className="pagination justify-content-center">
                             <li className={"page-item " + ((page <= 1) ? 'disabled' : '') }>
-                                <button className="page-link" onClick={() => { setLoading(true); setPage (page - 1) }}>Previous</button>
+                                <button className="page-link" onClick={() => setPage (page - 1)}>Previous</button>
                             </li>
                             {
-                                printPages (total_pages)
+                              [...Array(total_pages)].map ((elementInArray, index) => {
+                                
+                                let num_page = index + 1;
+                                return (
+                                  <li className="page-item" key={num_page}>
+                                      <button className={"page-link" + ((num_page === page) ? ' active' : '')} onClick={() => setPage (num_page)}>{num_page}</button>
+                                  </li>
+                                ) 
+                              })
                             }
-                            <li className={"page-item " + ((page > 1) ? 'disabled' : '')}>
-                                <button className="page-link" onClick={() => { setLoading (true); setPage (page + 1) }}>Next</button>
+                            <li className={"page-item " + ((page >= total_pages) ? 'disabled' : '')}>
+                                <button className="page-link" onClick={() => setPage (page + 1)}>Next</button>
                             </li>
                         </ul>
                     </nav>
