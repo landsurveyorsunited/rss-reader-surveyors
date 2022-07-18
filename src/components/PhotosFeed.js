@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import moment from 'moment';
+import { Loading } from './Loading';
+import { NoItems } from './NoItems';
 
 export const PhotosFeed = () => {
 
@@ -49,11 +51,8 @@ export const PhotosFeed = () => {
       });
 
 
-      setTimeout ( () => {
-        
-        setAllPhotos (all_photos_wta);
-        setInitialLoad (false);
-      }, 2000);
+      setAllPhotos (all_photos_wta);
+      setInitialLoad (false);
 
     };
     
@@ -86,7 +85,7 @@ export const PhotosFeed = () => {
 
   useEffect ( () => {
     setLoading (false);
-  }, [photos_filtered])
+  }, [photos_filtered]);
 
   const toggleBookmark = (id) => {
     
@@ -145,16 +144,12 @@ export const PhotosFeed = () => {
       }
       {
           (initialLoad || loading) && (
-            <div className="loading">
-              <h3>Loading RSS Feeds...</h3>
-            </div>
+            <Loading />
           )
       }
       {
           ! loading && photos_in_view.length <= 0 && (
-            <div className="loading">
-              <h3>No items to show.</h3>
-            </div>
+            <NoItems />
           )
       }
       {
