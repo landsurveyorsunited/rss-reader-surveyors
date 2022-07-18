@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import moment from 'moment';
 
 export const PhotosFeed = () => {
 
@@ -39,9 +40,11 @@ export const PhotosFeed = () => {
 
         let link = item.querySelector ("link").textContent;
 
-        let date = item.querySelector ("pubDate").textContent;
+        let date          = item.querySelector ("pubDate").textContent;
+        let date_modified = moment (date).utc ().format ('MM/DD/YYYY HH:mm') + ' UTC';
 
-        return {id, title, description, img: {url: img_url, alt: img_alt}, link, date, bookmark: false};
+        
+        return {id, title, description, img: {url: img_url, alt: img_alt}, link, date: date_modified, bookmark: false};
       });
 
       setAllPhotos (all_photos_wta);
