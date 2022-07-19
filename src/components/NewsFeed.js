@@ -6,16 +6,11 @@ import { NoItems } from './NoItems';
 export const NewsFeed = () => {
 
   const CORS_PROXY          = "https://cors-anywhere.herokuapp.com/";
-  const feeds_url = [
-    {id: 'atp', url: 'https://www.atptour.com/en/media/rss-feed/xml-feed'},
-    {id: 'espn', url: 'https://www.espn.com/espn/rss/tennis/news/'},
-    {id: 'brain', url: 'https://www.braingametennis.com/feed/'},
-    {id: 'univ', url: 'https://blog.universaltennis.com/feed/'}
-  ];
+
 
   const [loading, setLoading]                       = useState (true);
   const [initialLoad, setInitialLoad]               = useState (true);
-  const [all_photos, setAllPhotos]                  = useState ([]);
+  const [all_feeds, setAllFeeds]                    = useState ([]);
   const [photos_filtered, setPhotosFiltered]        = useState ([]);
   const [photos_in_view, setPhotosInView]           = useState ([]);
   const [results_by_page, setResultsByPage]         = useState (12);
@@ -25,14 +20,20 @@ export const NewsFeed = () => {
   
   useEffect (() => {
     
+    const feeds_url = [
+      {id: 'usa', url: 'https://ftw.usatoday.com/category/tennis/feed', name: 'USA Today - Tennis'},
+      {id: 'espn', url: 'https://www.espn.com/espn/rss/tennis/news/', name: 'ESPN - Tennis'},
+      {id: 'univ', url: 'https://blog.universaltennis.com/feed/', name: 'Universal Tennis'},
+      {id: 'aus', url: 'http://feeds.feedburner.com/tennis-australia', name: 'Tennis Australia'}
+    ];
+
     const getAllFeeds = async () => {
     
-      const items = [];
+      const items_by_site = [];
       feeds_url.map (async (site, index) => {
 
         const content_text   = await fetch(CORS_PROXY + site.url).then(r => r.text());
         const content_xmlDoc = new DOMParser().parseFromString (content_text, "text/xml");
-        console.log (content_xmlDoc);
 
         const feed_site = content_xmlDoc.querySelector ("channel title").textContent;
         
@@ -43,58 +44,47 @@ export const NewsFeed = () => {
           let title = item.querySelector ("title").textContent;
           
           let img_url = '', img_alt = '';
-          if (site.id === 'atp') {
+          if (site.id === 'usa') {
 
+            let img_obj = item.getElementsByTagName ("media:thumbnail");
+            if (Array.isArray (img_obj)) {
+
+              img_url     = img_obj[0].getAttribute ('src');
+              img_alt     = title;
+            }
           } else if (site.id === 'espn') {
 
             let img_obj = item.querySelector ("enclosure");
-            img_url = img_obj.getAttribute ('url');
-            img_alt = item.querySelector ("description").textContent;
-          } else if (site.id === 'brain') {
-
+            img_url     = img_obj.getAttribute ('url');
+            img_alt     = item.querySelector ("description").textContent;
           } else if (site.id === 'univ') {
 
             let description_html = item.querySelector ("description").textContent;
-            img_url = description_html.match (/<img[^>]* src=\"([^\"]*)\"[^>]*>/)[1];
-            img_alt = description_html.match (/<img[^>]* alt=\"([^\"]*)\"[^>]*>/)[1];
+            img_url     = description_html.match (/<img[^>]* src="([^"]*)"[^>]*>/)[1];
+            img_alt     = description_html.match (/<img[^>]* alt="([^"]*)"[^>]*>/)[1];
+          } else if (site.id === 'aus') {
+            let description_html = item.querySelector ("description").textContent;
+            img_url     = description_html.match (/<img[^>]* src="([^"]*)"[^>]*>/)[1];
+            img_alt     = title;
           }
-          /*
-          let description_html  = item.querySelector ("description").textContent;
-          let description_match = description_html.match (/<p>(.+)<\/p>/);
-          let description       = description_match ? description_match[1] : title;
-          
-        
-          let img_obj       = item.getElementsByTagName ("media:thumbnail")[0];
-          let img_url       = img_obj.getAttribute ('url');
-          let img_alt_match = description_html.match (/alt="(.+)"/);
-          let img_alt       = img_alt_match ? img_alt_match[1] : title;
-          */
-  
           let link = item.querySelector ("link").textContent;
   
           let date          = item.querySelector ("pubDate").textContent;
-          let date_modified = moment (date).utc ().format ('MM/DD/YYYY HH:mm') + ' UTC';
+          let date_moment   = moment (date).utc ();
+          let date_modified = date_moment.format ('MM/DD/YYYY HH:mm') + ' UTC';
   
-          console.log({id, title, link, img: {url: img_url, alt: img_alt}, date: date_modified, feed_site, bookmark: false});
-          return {id, title, link, img: {url: img_url, alt: img_alt}, date: date_modified, feed_site, bookmark: false};
+          return {id, title, link, img: {url: img_url, alt: img_alt}, date_moment, date: date_modified, feed_site, bookmark: false};
         });
         
-        items.push (partial_items);
+        items_by_site.push (partial_items);
 
+        setTimeout (() => {}, 5000);
       });
 
-      //console.log (items);
+      const items = items_by_site.flat ();
 
-      /*
-      console.log (items);
-      items = items.flat ();
-      
-      setTimeout ( () => {
-        
-        setAllPhotos (items);
-        setInitialLoad (false);
-      }, 2000);
-      */
+      setAllFeeds (items);
+      setInitialLoad (false);
     };
     
     getAllFeeds ();
@@ -119,9 +109,9 @@ export const NewsFeed = () => {
   useEffect ( () => {
     
     setLoading (true);
-    if (show_only_bookmarks) setPhotosFiltered (all_photos.filter (item => item.bookmark));
-    else setPhotosFiltered (all_photos);
-  }, [show_only_bookmarks, all_photos])
+    if (show_only_bookmarks) setPhotosFiltered (all_feeds.filter (item => item.bookmark));
+    else setPhotosFiltered (all_feeds);
+  }, [show_only_bookmarks, all_feeds])
   
 
   useEffect ( () => {
@@ -130,7 +120,7 @@ export const NewsFeed = () => {
 
   const toggleBookmark = (id) => {
     
-    setAllPhotos (prev => prev.map (oldItem => {
+    setAllFeeds (prev => prev.map (oldItem => {
       if (oldItem.id === id) {
         return {
           ...oldItem,
