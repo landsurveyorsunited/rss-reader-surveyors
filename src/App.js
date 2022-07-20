@@ -5,6 +5,7 @@ import { NewsFeed } from "./components/NewsFeed";
 import { ResultsFeed } from "./components/ResultsFeed";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Home } from "./components/Home";
+import { Configuration } from "./components/Configuration";
 
 function App () {
   return (
@@ -14,8 +15,9 @@ function App () {
         <Route path="/news-feed" element={<NewsFeed />} />
         <Route path="/photos-feed" element={<PhotosFeed />} />
         <Route path="/results-feed" element={<ResultsFeed />} />
+        <Route path="/configuration" element={<Configuration />} />
         <Route path="/home" element={<Home />} />
-        <Route path="*" element={<Navigate to="/photos-feed" replace/>} />
+        <Route path="*" element={<Navigate to="/news-feed" replace/>} />
       </Routes>
       <Footer />
     </BrowserRouter>
