@@ -31,7 +31,7 @@ export const NewsFeed = () => {
       
         feeds_url.filter (site => site.active).map (async (site, index) => {
 
-          const content_text   = await fetch(CORS_PROXY + site.url).then(r => r.text());
+          const content_text   = await fetch(site.url).then(r => r.text());
           const content_xmlDoc = new DOMParser().parseFromString (content_text, "text/xml");
 
           const partial_items = Array.from (content_xmlDoc.querySelectorAll ("item")).map ( (item, index2) => {
