@@ -5,10 +5,10 @@ import { NoItems } from './NoItems';
 
 export const NewsFeed = () => {
 
-  const CORS_PROXY          = "http://localhost:8080/";
+  const CORS_PROXY = "http://localhost:8080/";
 
   const [loading, setLoading]                       = useState (true);
-  const [initial_load, setInitialLoad]               = useState (true);
+  const [initial_load, setInitialLoad]              = useState (true);
   const [all_feeds, setAllFeeds]                    = useState ([]);
   const [feeds_filtered, setFeedsFiltered]          = useState ([]);
   const [feeds_in_view, setFeedsInView]             = useState ([]);
@@ -95,7 +95,7 @@ export const NewsFeed = () => {
       
       getAllFeeds ();
     }
-  }, [initial_load])
+  }, [initial_load]);
   
  
   useEffect ( () => {
@@ -116,6 +116,7 @@ export const NewsFeed = () => {
   useEffect ( () => {
     
     setLoading (true);
+    setPage (1);
     if (show_only_bookmarks) setFeedsFiltered (all_feeds.filter (item => item.bookmark));
     else setFeedsFiltered (all_feeds);
   }, [show_only_bookmarks, all_feeds])
@@ -123,7 +124,8 @@ export const NewsFeed = () => {
 
   useEffect ( () => {
     setLoading (false);
-  }, [feeds_filtered])
+  }, [feeds_in_view]);
+
 
   const toggleBookmark = (id) => {
     
