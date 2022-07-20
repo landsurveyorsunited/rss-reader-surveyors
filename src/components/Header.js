@@ -4,7 +4,7 @@ import {NavLink} from 'react-router-dom'
 export const Header = () => {
   return (
     <nav className="navbar sticky-top navbar-expand-lg navbar-dark bg-primary">
-      <div className="container-lg">
+      <div className="container-fluid">
         <NavLink to="/" className="navbar-brand">RSS Tennis Feed</NavLink>
         <div className="collapse navbar-collapse" id="navbarRSSFeed">
           <div className="navbar-nav">

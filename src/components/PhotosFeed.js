@@ -5,11 +5,11 @@ import { NoItems } from './NoItems';
 
 export const PhotosFeed = () => {
 
-  const CORS_PROXY          = "https://cors-anywhere.herokuapp.com/";
+  const CORS_PROXY          = "http://localhost:8080/";
   const feed_url_photos_WTA = 'https://www.wtatennis.com/rss-photos.xml';
 
   const [loading, setLoading]                       = useState (true);
-  const [initialLoad, setInitialLoad]               = useState (true);
+  const [initial_load, setInitialLoad]               = useState (true);
   const [all_photos, setAllPhotos]                  = useState ([]);
   const [photos_filtered, setPhotosFiltered]        = useState ([]);
   const [photos_in_view, setPhotosInView]           = useState ([]);
@@ -114,9 +114,9 @@ export const PhotosFeed = () => {
 
 
   return (
-    <div className='rss-feed rss-photo-feed'>
+    <div className='rss-feed rss-news-feed'>
       {
-          (! initialLoad && ! loading) && (
+          (! initial_load && ! loading) && (
             <div className='container-lg'>
               <div className="row mt-3 justify-content-between">
                 <div className='col-md-4'>
@@ -143,7 +143,7 @@ export const PhotosFeed = () => {
           )
       }
       {
-          (initialLoad || loading) && (
+          (initial_load || loading) && (
             <Loading />
           )
       }
@@ -153,7 +153,7 @@ export const PhotosFeed = () => {
           )
       }
       {
-          (! initialLoad && ! loading) && photos_in_view.length > 0 && (
+          (! initial_load && ! loading) && photos_in_view.length > 0 && (
             <div className='container-lg'>
               <div className="row mt-3">
                   {
@@ -166,7 +166,7 @@ export const PhotosFeed = () => {
                                     <div onClick={() => toggleBookmark (item.id)} className={"bookmark" + (item.bookmark === true ? ' selected' : '')}>
                                       <i className={"fa-solid fa-star"} ></i>
                                     </div>
-                                    <small className='float-end mt-2'>{item.date}</small>
+                                    <small className='float-end mt-2 date'>{item.date}</small>
                                     <img src={item.img.url} className="card-img-top" alt={item.img.alt} />
                                   
                                   <div className="card-body">
@@ -184,7 +184,7 @@ export const PhotosFeed = () => {
           )
       }
       {
-        (! initialLoad && ! loading) && (total_pages > 0)  && (
+        (! initial_load && ! loading) && (total_pages > 0)  && (
           <div className='container-md'>
             <div className="row">
                 <div className="col-12">

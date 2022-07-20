@@ -5,118 +5,125 @@ import { NoItems } from './NoItems';
 
 export const NewsFeed = () => {
 
-  const CORS_PROXY          = "https://cors-anywhere.herokuapp.com/";
-
+  const CORS_PROXY          = "http://localhost:8080/";
 
   const [loading, setLoading]                       = useState (true);
-  const [initialLoad, setInitialLoad]               = useState (true);
+  const [initial_load, setInitialLoad]               = useState (true);
   const [all_feeds, setAllFeeds]                    = useState ([]);
-  const [photos_filtered, setPhotosFiltered]        = useState ([]);
-  const [photos_in_view, setPhotosInView]           = useState ([]);
-  const [results_by_page, setResultsByPage]         = useState (12);
+  const [feeds_filtered, setFeedsFiltered]          = useState ([]);
+  const [feeds_in_view, setFeedsInView]             = useState ([]);
+  const [results_by_page, setResultsByPage]         = useState (24);
   const [page, setPage]                             = useState (1);
   const [total_pages, setTotalPages]                = useState (0);
   const [show_only_bookmarks, setShowOnlyBookmarks] = useState (false);
   
   useEffect (() => {
     
-    const feeds_url = [
-      {id: 'usa', url: 'https://ftw.usatoday.com/category/tennis/feed', name: 'USA Today - Tennis'},
-      {id: 'espn', url: 'https://www.espn.com/espn/rss/tennis/news/', name: 'ESPN - Tennis'},
-      {id: 'univ', url: 'https://blog.universaltennis.com/feed/', name: 'Universal Tennis'},
-      {id: 'aus', url: 'http://feeds.feedburner.com/tennis-australia', name: 'Tennis Australia'}
-    ];
+    if (initial_load) {
+      const feeds_url = [
+        {id: 'usa', url: 'https://ftw.usatoday.com/category/tennis/feed', name: 'USA Today - Tennis', 'active': true},
+        {id: 'espn', url: 'https://www.espn.com/espn/rss/tennis/news/', name: 'ESPN - Tennis', 'active': true},
+        {id: 'univ', url: 'https://blog.universaltennis.com/feed/', name: 'Universal Tennis', 'active': true},
+        {id: 'aus', url: 'http://feeds.feedburner.com/tennis-australia', name: 'Tennis Australia', 'active': true}
+      ];
 
-    const getAllFeeds = async () => {
+      const getAllFeeds = async () => {
+      
+        feeds_url.filter (site => site.active).map (async (site, index) => {
+
+          const content_text   = await fetch(CORS_PROXY + site.url).then(r => r.text());
+          const content_xmlDoc = new DOMParser().parseFromString (content_text, "text/xml");
+
+          const partial_items = Array.from (content_xmlDoc.querySelectorAll ("item")).map ( (item, index2) => {
+            
+            let id = site.id + '-' + index2;
     
-      const items_by_site = [];
-      feeds_url.map (async (site, index) => {
+            let title = item.querySelector ("title").textContent;
+            
+            let img_url = '', img_alt = '';
+            if (site.id === 'usa') {
 
-        const content_text   = await fetch(CORS_PROXY + site.url).then(r => r.text());
-        const content_xmlDoc = new DOMParser().parseFromString (content_text, "text/xml");
+              let img_obj = item.getElementsByTagName ("media:content");
+              if (img_obj[0]) {
+                img_url     = img_obj[0].getAttribute ('url');
+                img_alt     = title;
+              }
+              
+            } else if (site.id === 'espn') {
 
-        const feed_site = content_xmlDoc.querySelector ("channel title").textContent;
-        
-        const partial_items = Array.from (content_xmlDoc.querySelectorAll ("item")).map ( (item, index2) => {
-          
-          let id = site.id + '-' + index2;
-  
-          let title = item.querySelector ("title").textContent;
-          
-          let img_url = '', img_alt = '';
-          if (site.id === 'usa') {
+              let img_obj = item.querySelector ("enclosure");
+              img_url     = img_obj.getAttribute ('url');
+              img_alt     = item.querySelector ("description").textContent;
 
-            let img_obj = item.getElementsByTagName ("media:thumbnail");
-            if (Array.isArray (img_obj)) {
+            } else if (site.id === 'univ') {
 
-              img_url     = img_obj[0].getAttribute ('src');
-              img_alt     = title;
+              let description_html = item.querySelector ("description").textContent;
+              let matches          = description_html.match (/<img[^>]* src="([^"]*)\?.*"[^>]* alt="([^"]*)"[^>]*>/);
+              img_url     = matches[1];
+              img_alt     = matches[2] ? matches[2] : title;
+
+            } else if (site.id === 'aus') {
+
+              let description_html = item.querySelector ("description").textContent;
+              let matches          = description_html.match (/<img[^>]* src="([^"]*)\??.*"[^>]* alt="([^"]*)"[^>]* srcset="([^"]*)"[^>]*>/);
+              
+              img_url     = matches[1];
+              img_alt     = matches[2] ? matches[2] : title;
+              
+              if (matches[3]) {
+
+                let images_by_size = matches[3].trim().split (', ').map (value => value.split (" "));
+                let bigger_image   = images_by_size.sort ( (a,b) => parseInt(a[1].slice(0,-1)) > parseInt(b[1].slice(0,-1)) ? -1 : 1).shift ();
+                img_url = bigger_image[0];
+              }
+
             }
-          } else if (site.id === 'espn') {
-
-            let img_obj = item.querySelector ("enclosure");
-            img_url     = img_obj.getAttribute ('url');
-            img_alt     = item.querySelector ("description").textContent;
-          } else if (site.id === 'univ') {
-
-            let description_html = item.querySelector ("description").textContent;
-            img_url     = description_html.match (/<img[^>]* src="([^"]*)"[^>]*>/)[1];
-            img_alt     = description_html.match (/<img[^>]* alt="([^"]*)"[^>]*>/)[1];
-          } else if (site.id === 'aus') {
-            let description_html = item.querySelector ("description").textContent;
-            img_url     = description_html.match (/<img[^>]* src="([^"]*)"[^>]*>/)[1];
-            img_alt     = title;
-          }
-          let link = item.querySelector ("link").textContent;
-  
-          let date          = item.querySelector ("pubDate").textContent;
-          let date_moment   = moment (date).utc ();
-          let date_modified = date_moment.format ('MM/DD/YYYY HH:mm') + ' UTC';
-  
-          return {id, title, link, img: {url: img_url, alt: img_alt}, date_moment, date: date_modified, feed_site, bookmark: false};
-        });
-        
-        items_by_site.push (partial_items);
-
-        setTimeout (() => {}, 5000);
-      });
-
-      const items = items_by_site.flat ();
-
-      setAllFeeds (items);
-      setInitialLoad (false);
-    };
+            let link = item.querySelector ("link").textContent;
     
-    getAllFeeds ();
-  }, [])
+            let date          = item.querySelector ("pubDate").textContent;
+            let date_moment   = moment (date).utc ();
+            let date_modified = date_moment.format ('MM/DD/YYYY HH:mm') + ' UTC';
+    
+            return {id, title, link, img: {url: img_url, alt: img_alt}, date_moment, date: date_modified, site, bookmark: false};
+          });
+          
+          setAllFeeds (current => [...current, ...partial_items].sort ((a, b) => a.date_moment > b.date_moment ? -1 : 1));
+        });
+
+        setInitialLoad (false);
+      };
+      
+      getAllFeeds ();
+    }
+  }, [initial_load])
   
-  
+ 
   useEffect ( () => {
 
     setLoading (true);
-    if (Array.isArray (photos_filtered)) {
+    if (Array.isArray (feeds_filtered)) {
       
-      setTotalPages (Math.ceil (photos_filtered.length / results_by_page));
-      setPhotosInView (photos_filtered.slice ( (page -1) * results_by_page, page * results_by_page));
+      setTotalPages (Math.ceil (feeds_filtered.length / results_by_page));
+      setFeedsInView (feeds_filtered.slice ( (page -1) * results_by_page, page * results_by_page));
     } else {
       setTotalPages (0);
-      setPhotosInView ([]);
+      setFeedsInView ([]);
     }
     
-  }, [photos_filtered, results_by_page, page]);
+  }, [feeds_filtered, results_by_page, page]);
 
   
   useEffect ( () => {
     
     setLoading (true);
-    if (show_only_bookmarks) setPhotosFiltered (all_feeds.filter (item => item.bookmark));
-    else setPhotosFiltered (all_feeds);
+    if (show_only_bookmarks) setFeedsFiltered (all_feeds.filter (item => item.bookmark));
+    else setFeedsFiltered (all_feeds);
   }, [show_only_bookmarks, all_feeds])
   
 
   useEffect ( () => {
     setLoading (false);
-  }, [photos_filtered])
+  }, [feeds_filtered])
 
   const toggleBookmark = (id) => {
     
@@ -131,7 +138,7 @@ export const NewsFeed = () => {
       return oldItem;
     }));
 
-    setPhotosFiltered (prev => prev.map (oldItem => {
+    setFeedsFiltered (prev => prev.map (oldItem => {
       if (oldItem.id === id) {
         return {
           ...oldItem,
@@ -145,24 +152,24 @@ export const NewsFeed = () => {
 
 
   return (
-    <div className='rss-feed rss-photo-feed'>
+    <div className='rss-feed rss-news-feed'>
       {
-          (! initialLoad && ! loading) && (
-            <div className='container-lg'>
+          (! initial_load && ! loading) && (
+            <div className='container-fluid'>
               <div className="row mt-3 justify-content-between">
                 <div className='col-md-4'>
                     <button className="btn btn-block btn-outline-primary" onClick={() => setShowOnlyBookmarks (current => !current) }>{show_only_bookmarks ? "Show All Items" : "Show Only Bookmarks"} <i className={"fa-solid fa-star"} ></i></button>
                 </div>
                 { 
-                  photos_in_view.length > 0 && (
+                  feeds_in_view.length > 0 && (
                     <div className='col-md-4 mt-3 mt-md-0'>
                       <div className='row justify-content-end'>
                         <label htmlFor="resultsbypage" className="col-md-7 col-lg-8 text-md-end col-form-label">Results by page</label>
                         <div className="col-md-5 col-lg-4">
                           <select name="resultsbypage" id="resultsbypage" className="form-select" onChange={e => setResultsByPage (parseInt (e.currentTarget.value))} value={results_by_page}>
-                            <option value="12">12</option>
-                            <option value="20">20</option>
-                            <option value="50">50</option>
+                            <option value="24">24</option>
+                            <option value="36">36</option>
+                            <option value="48">48</option>
                           </select>
                         </div>
                       </div>
@@ -174,36 +181,37 @@ export const NewsFeed = () => {
           )
       }
       {
-          (initialLoad || loading) && (
+          (initial_load || loading) && (
             <Loading />
           )
       }
       {
-          ! loading && photos_in_view.length <= 0 && (
+          ! loading && feeds_in_view.length <= 0 && (
             <NoItems />
           )
       }
       {
-          (! initialLoad && ! loading) && photos_in_view.length > 0 && (
-            <div className='container-lg'>
+          (! initial_load && ! loading) && feeds_in_view.length > 0 && (
+            <div className='container-fluid'>
               <div className="row mt-3">
                   {
-                      photos_in_view.map ( (item) => {
+                      feeds_in_view.map ( (item) => {
                           if (show_only_bookmarks && ! item.bookmark) return '';
 
                           return (
-                              <div className="col-sm-6 col-lg-4 pb-3" key={item.link}>
+                              <div className="col-sm-6 col-lg-3 col-xl-2 pb-3" key={item.link}>
                                 <div className='card og'>
                                     <div onClick={() => toggleBookmark (item.id)} className={"bookmark" + (item.bookmark === true ? ' selected' : '')}>
                                       <i className={"fa-solid fa-star"} ></i>
                                     </div>
-                                    <small className='float-end mt-2'>{item.date}</small>
-                                    <img src={item.img.url} className="card-img-top" alt={item.img.alt} />
-                                  
+                                    <small className='float-end mt-2 date'>{item.date}</small>
+                                    <img src={item.img.url ? item.img.url : 'http://via.placeholder.com/400x400'} className="card-img-top" alt={item.img.alt} />                                  
                                   <div className="card-body">
-                                    <h3 className="card-title">{item.title}</h3>
-                                    <p className="card-text mb-0" dangerouslySetInnerHTML={{__html: item.description}}></p>
-                                    <a href={item.link} className="btn btn-primary float-end mt-2" target="_blank" rel="noreferrer">Go to Gallery <i className="fa-solid fa-arrow-up-right-from-square"></i></a>
+                                    <h6 className="card-title">{item.title}</h6>
+                                    <div className='card-bottom mt-3'>
+                                      <a href={item.link} className="btn btn-primary btn-sm float-end" target="_blank" rel="noreferrer">Go to web <i className="fa-solid fa-arrow-up-right-from-square"></i></a>
+                                      <small className="card-text site">{item.site.name}</small>
+                                    </div>
                                   </div>
                                 </div>
                               </div>                        
@@ -215,7 +223,7 @@ export const NewsFeed = () => {
           )
       }
       {
-        (! initialLoad && ! loading) && (total_pages > 0)  && (
+        (! initial_load && ! loading) && (total_pages > 0)  && (
           <div className='container-md'>
             <div className="row">
                 <div className="col-12">

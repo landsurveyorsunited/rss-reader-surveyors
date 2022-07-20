@@ -11,8 +11,8 @@
         }
     }
 
-    &.rss-photo-feed .card {
-        small {
+    &.rss-news-feed .card {
+        small.date {
             
             padding: 5px;
             position: absolute;
@@ -22,6 +22,11 @@
             background-color: rgba(0,0,0,0.5);
             border-radius: 0 5px 0 0;
             z-index: 2;
+        }
+
+        small.site {
+            position:absolute;
+            bottom: var(--bs-card-spacer-y);
         }
 
         div {
@@ -54,6 +59,28 @@
                 color: black;
             }
         }
+    }
+}
+
+img.card-img-top {
+    width: 100%;
+    @media (max-width: 991px) {
+
+        height: 50vw;
+        object-fit: cover;
+        object-position: top;
+    }
+    @media (max-width: 1199px) {
+
+        height: 25vw;
+        object-fit: cover;
+        object-position: top;
+    }
+    @media (min-width: 1400px) {
+
+        height: 10vw;
+        object-fit: cover;
+        //object-position: top;
     }
 }
 
