@@ -5,8 +5,6 @@ import { NoItems } from './NoItems';
 
 export const NewsFeed = () => {
 
-  const CORS_PROXY = "http://localhost:8080/";
-
   const [loading, setLoading]                       = useState (true);
   const [initial_load, setInitialLoad]              = useState (true);
   const [all_feeds, setAllFeeds]                    = useState ([]);
@@ -24,14 +22,17 @@ export const NewsFeed = () => {
         {id: 'usa', url: 'https://ftw.usatoday.com/category/tennis/feed', name: 'USA Today - Tennis', 'active': true},
         {id: 'espn', url: 'https://www.espn.com/espn/rss/tennis/news/', name: 'ESPN - Tennis', 'active': true},
         {id: 'univ', url: 'https://blog.universaltennis.com/feed/', name: 'Universal Tennis', 'active': true},
-        {id: 'aus', url: 'http://feeds.feedburner.com/tennis-australia', name: 'Tennis Australia', 'active': true}
+        {id: 'aus', url: 'https://feeds.feedburner.com/tennis-australia', name: 'Tennis Australia', 'active': true}
       ];
 
       const getAllFeeds = async () => {
       
+        let cors_prefix = '';
+        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") cors_prefix = "http://localhost:8080/";
+
         feeds_url.filter (site => site.active).map (async (site, index) => {
 
-          const content_text   = await fetch(site.url).then(r => r.text());
+          const content_text   = await fetch(cors_prefix + site.url).then(r => r.text());
           const content_xmlDoc = new DOMParser().parseFromString (content_text, "text/xml");
 
           const partial_items = Array.from (content_xmlDoc.querySelectorAll ("item")).map ( (item, index2) => {
