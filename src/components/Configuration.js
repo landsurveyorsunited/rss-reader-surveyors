@@ -1,22 +1,56 @@
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
+import { FeedRSSContext } from './context/FeedRSSContext';
 
 export const Configuration = () => {
 
-    const [modo_oscuro, setModoOscuro] = useState(false);
-    const [feeds_url, setFeedsUrl] = useState ([
-        {id: 'usa', url: 'https://ftw.usatoday.com/category/tennis/feed', name: 'USA Today - Tennis', 'active': true},
-        {id: 'espn', url: 'https://www.espn.com/espn/rss/tennis/news/', name: 'ESPN - Tennis', 'active': true},
-        {id: 'univ', url: 'https://blog.universaltennis.com/feed/', name: 'Universal Tennis', 'active': true},
-        {id: 'aus', url: 'https://feeds.feedburner.com/tennis-australia', name: 'Tennis Australia', 'active': true}
-    ]);
-    
+    const {vars, setVars} = useContext (FeedRSSContext);
+
+    const toggleFeed = (id) => {
+
+        setVars ((prev) => prev.map (oldFeed => {
+            if (oldFeed.id === id) {
+                return {
+                    ...oldFeed,
+                    active: !oldFeed.active
+                }
+            }
+            
+            return oldFeed;
+        }));
+    }
+        
     return (
         <div className='configuration'>
             <div className='container'>
                 <div className="row mt-3">
+                    <div className='col-md-6 offset-md-3'>
+                        <h3 className='text-center'>Fuentes de datos RSS</h3>
+                        <div className='rss-sources'>
+                            {
+                                vars.feeds.map (feed => (
+                                    <div key={feed.id} className='item p-3 d-flex justify-content-between align-items-center'>
+
+                                        { feed.active ? (
+                                            <>
+                                                <a href={feed.url} className='text text-primary mr-3 fw-bold' target="_blank" rel="noreferrer" title="See XML Feed">{feed.name}</a>
+                                                <button className='btn btn-outline-danger btn-sm' onClick={toggleFeed (feed.id)}>Desactivar</button> 
+                                            </>
+                                        ) : (
+                                            <>
+                                                <a href={feed.url} className='text text-primary mr-3' target="_blank" rel="noreferrer" title="See XML Feed">{feed.name}</a>
+                                                <button className='btn btn-outline-success btn-sm' onClick={toggleFeed (feed.id)} >Activar</button>
+                                            </>
+                                        )}
+                                    </div>
+                                ))
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div className="row mt-3">
                     <div className='col-md-12'>
                         <div className="form-check form-switch">
-                            <label className="form-check-label" for="modo-claro">Modo Claro</label>
+                            <label className="form-check-label" htmlFor="modo-oscuro">Modo Oscuro</label>
                             <input className="form-check-input" type="checkbox" id="modo-claro" />
                         </div>
                     </div>

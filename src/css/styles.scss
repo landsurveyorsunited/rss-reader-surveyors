@@ -84,5 +84,16 @@ img.card-img-top {
     }
 }
 
+.rss-sources {
+
+    .item {
+        border-bottom: solid 1px gray;
+        
+
+        a {
+            text-decoration: none;
+        }
+    }
+}
 
 @import "../../node_modules/bootstrap/scss/bootstrap";
