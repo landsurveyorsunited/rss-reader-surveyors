@@ -7,38 +7,57 @@ export const Configuration = () => {
 
     const toggleFeed = (id) => {
 
-        setVars ((prev) => prev.map (oldFeed => {
-            if (oldFeed.id === id) {
+        const newFeeds = vars.feeds.map ( feed => {
+            if ( feed.id === id) {
                 return {
-                    ...oldFeed,
-                    active: !oldFeed.active
+                    ... feed,
+                    active: ! feed.active
                 }
             }
-            
-            return oldFeed;
-        }));
+            return feed;
+        });
+
+        setVars ({
+            ...vars,
+            feeds: newFeeds
+        });
     }
+
+    const toggleDarkMode = () => {
+
+        setVars ({
+            ...vars,
+            dark_mode: !vars.dark_mode
+        })
+    }
+
         
     return (
-        <div className='configuration'>
+        <div className='configuration mt-5'>
             <div className='container'>
-                <div className="row mt-3">
+                <div className="row">
                     <div className='col-md-6 offset-md-3'>
-                        <h3 className='text-center'>Fuentes de datos RSS</h3>
+                        <h3 className='text-center'>RSS Feed List</h3>
+                    </div>
+                </div>
+            </div>
+            <div className='container'>
+                <div className='row'>
+                    <div className='col-md-6 offset-md-3'>
                         <div className='rss-sources'>
                             {
-                                vars.feeds.map (feed => (
+                                vars.feeds?.map (feed => (
                                     <div key={feed.id} className='item p-3 d-flex justify-content-between align-items-center'>
 
                                         { feed.active ? (
                                             <>
                                                 <a href={feed.url} className='text text-primary mr-3 fw-bold' target="_blank" rel="noreferrer" title="See XML Feed">{feed.name}</a>
-                                                <button className='btn btn-outline-danger btn-sm' onClick={toggleFeed (feed.id)}>Desactivar</button> 
+                                                <button className='btn btn-outline-danger btn-sm' onClick={() => toggleFeed (feed.id)}>Turn OFF</button> 
                                             </>
                                         ) : (
                                             <>
                                                 <a href={feed.url} className='text text-primary mr-3' target="_blank" rel="noreferrer" title="See XML Feed">{feed.name}</a>
-                                                <button className='btn btn-outline-success btn-sm' onClick={toggleFeed (feed.id)} >Activar</button>
+                                                <button className='btn btn-outline-success btn-sm' onClick={() => toggleFeed (feed.id)} >Turn ON</button>
                                             </>
                                         )}
                                     </div>
@@ -47,12 +66,15 @@ export const Configuration = () => {
                         </div>
                     </div>
                 </div>
-                <div className="row mt-3">
-                    <div className='col-md-12'>
-                        <div className="form-check form-switch">
-                            <label className="form-check-label" htmlFor="modo-oscuro">Modo Oscuro</label>
-                            <input className="form-check-input" type="checkbox" id="modo-claro" />
-                        </div>
+                <div className="row mt-5">
+                    <div className='col-md-4 text-center offset-md-4'>
+                        {
+                            vars.dark_mode ? (
+                                <button className='btn btn-outline-dark btn-lg' onClick={ () => toggleDarkMode ()}>Turn ON Light Mode</button>
+                            ) : (
+                                <button className='btn btn-outline-dark btn-lg' onClick={ () => toggleDarkMode ()}>Turn ON Dark Mode</button>
+                            )
+                        }
                     </div>
                 </div>
             </div>

@@ -114,7 +114,7 @@ export const PhotosFeed = () => {
 
 
   return (
-    <div className='rss-feed rss-news-feed'>
+    <div className='rss-news-feed'>
       {
           (! initial_load && ! loading) && (
             <div className='container-lg'>
