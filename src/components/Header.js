@@ -10,7 +10,7 @@ export const Header = () => {
           <div className="collapse navbar-collapse" id="navbarRSSFeed">
             <div className="navbar-nav">
               <NavLink to="/news-feed" className={({isActive}) => ('nav-link ' + (isActive ? "active" : ''))}>News</NavLink>
-              <NavLink to="/photos-feed" className={({isActive}) => ('nav-link ' + (isActive ? "active" : ''))}>Photos</NavLink>
+              <NavLink to="/photos-feed" className={({isActive}) => ('nav-link ' + (isActive ? "active" : ''))}>Image Gallery</NavLink>
             </div>
             <div className="navbar-nav ">
               <NavLink to="/configuration" className={({isActive}) => ('nav-link ' + (isActive ? "active" : ''))}>Config</NavLink>

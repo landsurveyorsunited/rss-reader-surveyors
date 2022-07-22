@@ -72,27 +72,41 @@
             }
         }
     }
+    
+    img.card-img-top {
+        width: 100%;
+        @media (max-width: 991px) {
+    
+            height: 50vw;
+            object-fit: cover;
+            object-position: top;
+        }
+        @media (max-width: 1199px) {
+    
+            height: 25vw;
+            object-fit: cover;
+            object-position: top;
+        }
+        @media (min-width: 1400px) {
+    
+            height: 10vw;
+            object-fit: cover;
+            //object-position: top;
+        }
+    }
 }
 
-img.card-img-top {
-    width: 100%;
-    @media (max-width: 991px) {
+.rss-photos-feed {
 
-        height: 50vw;
-        object-fit: cover;
-        object-position: top;
-    }
-    @media (max-width: 1199px) {
-
-        height: 25vw;
-        object-fit: cover;
-        object-position: top;
-    }
-    @media (min-width: 1400px) {
-
-        height: 10vw;
-        object-fit: cover;
-        //object-position: top;
+    @media (min-width: 1200px) {
+    
+        margin: 0 auto;
+        width: 80hv;
+        
+        .image-gallery-content .image-gallery-slide .image-gallery-image {
+    
+            max-height: calc(80vh)!important;
+        }
     }
 }
 
@@ -110,4 +124,7 @@ img.card-img-top {
     }
 }
 
+
+
+@import "~react-image-gallery/styles/scss/image-gallery.scss";
 @import "../../node_modules/bootstrap/scss/bootstrap";
