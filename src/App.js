@@ -6,7 +6,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Home } from "./components/Home";
 import { Configuration } from "./components/Configuration";
 import { FeedRSSContext } from "./components/context/FeedRSSContext";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 function App () {
 

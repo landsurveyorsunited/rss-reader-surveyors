@@ -1,16 +1,28 @@
+.navbar-nav {
+    .active {
+        font-weight: bold;
+    }
+}
+
+.loading, .no-items {
+
+    width: 100%;
+    min-height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2vw;
+    @media (max-width: 991px) {
+        span {
+            font-size: 8vw;
+        }
+    }
+}
 
 .rss-news-feed {
     
-    min-height: 100vh;
-    .loading, .no-items {
-        
-        min-height: 100vh;
-        h3 {
-            line-height: 100vh;
-            text-align: center;
-        }
-    }
-
+    min-height: 80vh;
+    
     .card {
         small.date {
             
@@ -84,14 +96,16 @@ img.card-img-top {
     }
 }
 
-.rss-sources {
+.configuration {
 
-    .item {
-        border-bottom: solid 1px gray;
+    .rss-sources {
         
-
-        a {
-            text-decoration: none;
+        .item {
+            border-bottom: solid 1px gray;
+            
+            a {
+                text-decoration: none;
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import moment from 'moment';
-import { Loading } from './Loading';
-import { NoItems } from './NoItems';
+import { Loading } from './static/Loading';
+import { NoItems } from './static/NoItems';
 import { FeedRSSContext } from './context/FeedRSSContext';
 
 export const NewsFeed = () => {
@@ -15,15 +15,15 @@ export const NewsFeed = () => {
   const [total_pages, setTotalPages]                = useState (0);
   const [show_only_bookmarks, setShowOnlyBookmarks] = useState (false);
   
-  const {vars, setVars, initial_load, setInitialLoad} = useContext (FeedRSSContext);
+  const {vars, initial_load, setInitialLoad} = useContext (FeedRSSContext);
 
   useEffect ( () => {
     setInitialLoad (true);
-  }, []);
+  }, [setInitialLoad]);
 
   useEffect ( () => {
     setInitialLoad (true);
-  }, [vars]);
+  }, [vars, setInitialLoad]);
 
   useEffect (() => {
 
@@ -99,7 +99,7 @@ export const NewsFeed = () => {
       
       getAllFeeds ();
     }
-  }, [initial_load]);
+  }, [initial_load, vars, setInitialLoad]);
   
  
   useEffect ( () => {
@@ -128,7 +128,7 @@ export const NewsFeed = () => {
 
   useEffect ( () => {
     setLoading (false);
-  }, [items_in_view]);
+  }, [items_in_view, items_in_view]);
 
 
   const toggleBookmark = (id) => {
@@ -156,92 +156,84 @@ export const NewsFeed = () => {
     }));
   }
 
-
   return (
-    <div className='rss-news-feed mt-5'>
-      <div className='container'>
-        <div className="row">
-          <div className='col-md-6 offset-md-3'>
-            <h3 className='text-center'>News Feed</h3>
-          </div>
-        </div>
-      </div>
-      {
-          (! initial_load && ! loading) && (
-            <div className='container-fluid'>
-              <div className="row mt-3 justify-content-between">
-                <div className='col-md-4'>
-                    <button className="btn btn-block btn-outline-primary" onClick={() => setShowOnlyBookmarks (current => !current) }>{show_only_bookmarks ? "Show All Items" : "Show Only Bookmarks"} <i className={"fa-solid fa-star"} ></i></button>
-                </div>
-                { 
-                  items_in_view.length > 0 && (
-                    <div className='col-md-4 mt-3 mt-md-0'>
-                      <div className='row justify-content-end'>
-                        <label htmlFor="resultsbypage" className="col-md-7 col-lg-8 text-md-end col-form-label">Results by page</label>
-                        <div className="col-md-5 col-lg-4">
-                          <select name="resultsbypage" id="resultsbypage" className="form-select" onChange={e => setResultsByPage (parseInt (e.currentTarget.value))} value={results_by_page}>
-                            <option value="24">24</option>
-                            <option value="36">36</option>
-                            <option value="48">48</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                }
-              </div>
-            </div>
-          )
-      }
+    <>
       {
           (initial_load || loading) && (
             <Loading />
           )
       }
       {
-          ! loading && items_in_view.length <= 0 && (
+          (! initial_load && ! loading) && items_in_view.length <= 0 && (
             <NoItems />
           )
       }
       {
           (! initial_load && ! loading) && items_in_view.length > 0 && (
-            <div className='container-fluid'>
-              <div className="row mt-3">
-                  {
-                      items_in_view.map ( (item) => {
-                          if (show_only_bookmarks && ! item.bookmark) return '';
+            <>
+              <div className='rss-news-feed mt-5'>
+                <div className='container-fluid'>
+                  <div className="row mt-3 mb-5 justify-content-between">
+                    <div className='col-md-4 px-5'>
+                        <button className="btn btn-block btn-outline-primary" onClick={() => setShowOnlyBookmarks (current => !current) }>{show_only_bookmarks ? "Show All Items" : "Show Only Bookmarks"} <i className={"fa-solid fa-star"} ></i></button>
+                    </div>
+                    { 
+                      items_in_view.length > 0 && (
+                        <div className='col-md-4 offset-md-4 mt-3 mt-md-0 px-5'>
+                          <div className='row justify-content-end'>
+                            <label htmlFor="resultsbypage" className="col-md-7 col-lg-8 text-md-end col-form-label">Results by page</label>
+                            <div className="col-md-5 col-lg-4">
+                              <select name="resultsbypage" id="resultsbypage" className="form-select" onChange={e => setResultsByPage (parseInt (e.currentTarget.value))} value={results_by_page}>
+                                <option value="24">24</option>
+                                <option value="36">36</option>
+                                <option value="48">48</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    }
+                  </div>
+                </div>
+                <div className='container-fluid'>
+                  <div className="row mt-3">
+                      {
+                        items_in_view.map ( (item) => {
+                              if (show_only_bookmarks && ! item.bookmark) return '';
 
-                          return (
-                              <div className="col-sm-6 col-lg-3 col-xl-2 pb-3" key={item.link}>
-                                <div className='card og'>
-                                    <div onClick={() => toggleBookmark (item.id)} className={"bookmark" + (item.bookmark === true ? ' selected' : '')}>
-                                      <i className={"fa-solid fa-star"} ></i>
+                              return (
+                                  <div className="col-sm-6 col-lg-3 col-xl-2 pb-3" key={item.link}>
+                                    <div className='card og'>
+                                        <div onClick={() => toggleBookmark (item.id)} className={"bookmark" + (item.bookmark === true ? ' selected' : '')}>
+                                          <i className={"fa-solid fa-star"} ></i>
+                                        </div>
+                                        <small className='float-end mt-2 date'>{item.date}</small>
+                                        <img src={item.img.url ? item.img.url : 'http://via.placeholder.com/400x400'} className="card-img-top" alt={item.img.alt} />                                  
+                                      <div className="card-body">
+                                        <h6 className="card-title">{item.title}</h6>
+                                        <div className='card-bottom mt-3'>
+                                          <a href={item.link} className="btn btn-primary btn-sm float-end" target="_blank" rel="noreferrer">Go to web <i className="fa-solid fa-arrow-up-right-from-square"></i></a>
+                                          <small className="card-text site">{item.site.name}</small>
+                                        </div>
+                                      </div>
                                     </div>
-                                    <small className='float-end mt-2 date'>{item.date}</small>
-                                    <img src={item.img.url ? item.img.url : 'http://via.placeholder.com/400x400'} className="card-img-top" alt={item.img.alt} />                                  
-                                  <div className="card-body">
-                                    <h6 className="card-title">{item.title}</h6>
-                                    <div className='card-bottom mt-3'>
-                                      <a href={item.link} className="btn btn-primary btn-sm float-end" target="_blank" rel="noreferrer">Go to web <i className="fa-solid fa-arrow-up-right-from-square"></i></a>
-                                      <small className="card-text site">{item.site.name}</small>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>                        
-                          )
-                      })
-                  }
+                                  </div>                        
+                              )
+                          })
+                      }
+                  </div>
+                </div>
               </div>
-            </div>
+            </>
           )
       }
       {
-        (! initial_load && ! loading) && (total_pages > 0)  && (
-          <div className='container-md'>
+        (! initial_load && ! loading) && (total_pages > 1)  && (
+          <div className='container-md mt-5'>
             <div className="row">
                 <div className="col-12">
                     <nav aria-label="Page navigation">
-                        <ul className="pagination justify-content-center">
+                        <ul className="pagination justify-content-center mb-0">
                             <li className={"page-item " + ((page <= 1) ? 'disabled' : '') }>
                                 <button className="page-link" onClick={() => setPage (page - 1)}>Previous</button>
                             </li>
@@ -266,6 +258,6 @@ export const NewsFeed = () => {
           </div>
         )
       }
-    </div>
+    </>
   )
 }

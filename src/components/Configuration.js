@@ -10,7 +10,7 @@ export const Configuration = () => {
         const newFeeds = vars.feeds.map ( feed => {
             if ( feed.id === id) {
                 return {
-                    ... feed,
+                    ...feed,
                     active: ! feed.active
                 }
             }
@@ -67,6 +67,11 @@ export const Configuration = () => {
                     </div>
                 </div>
                 <div className="row mt-5">
+                    <div className='col-md-6 offset-md-3'>
+                        <h3 className='text-center'>Toggle Dark Mode</h3>
+                    </div>
+                </div>
+                <div className="row mt-3">
                     <div className='col-md-4 text-center offset-md-4'>
                         {
                             vars.dark_mode ? (

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import moment from 'moment';
-import { Loading } from './Loading';
-import { NoItems } from './NoItems';
+import { Loading } from './static/Loading';
+import { NoItems } from './static/NoItems';
 
 export const PhotosFeed = () => {
 
@@ -148,7 +148,7 @@ export const PhotosFeed = () => {
           )
       }
       {
-          ! loading && photos_in_view.length <= 0 && (
+          (! initial_load && ! loading) && photos_in_view.length <= 0 && (
             <NoItems />
           )
       }
