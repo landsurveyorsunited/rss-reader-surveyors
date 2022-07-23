@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 
 function App () {
 
-  const[vars, setVars]                 = useState ({});
+  const [vars, setVars]                 = useState ({});
   const [initial_load, setInitialLoad] = useState (true);
 
   useEffect ( () => {
@@ -28,6 +28,11 @@ function App () {
     if (localStorage.getItem ('tennis-rss') !== null) local_vars = JSON.parse (localStorage.getItem ('tennis-rss'));
     setVars (local_vars);
   }, []);
+
+  useEffect ( () => {
+    if (vars.dark_mode) document.body.classList.add ('dark-mode');
+    else document.body.classList.remove ('dark-mode');
+  }, [vars.dark_mode])
 
   useEffect( () => {
 

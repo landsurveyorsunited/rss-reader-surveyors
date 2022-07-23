@@ -175,7 +175,7 @@ export const NewsFeed = () => {
                 <div className='container-fluid'>
                   <div className="row mt-3 mb-5 justify-content-between">
                     <div className='col-md-4 px-5'>
-                        <button className="btn btn-block btn-outline-primary" onClick={() => setShowOnlyBookmarks (current => !current) }>{show_only_bookmarks ? "Show All Items" : "Show Only Bookmarks"} <i className={"fa-solid fa-star"} ></i></button>
+                        <button className={"btn btn-block " + (vars.dark_mode ? 'btn-outline-light' : 'btn-outline-primary')} onClick={() => setShowOnlyBookmarks (current => !current) }>{show_only_bookmarks ? "Show All Items" : "Show Only Bookmarks"} <i className={"fa-solid fa-star"} ></i></button>
                     </div>
                     { 
                       items_in_view.length > 0 && (
@@ -212,7 +212,7 @@ export const NewsFeed = () => {
                                       <div className="card-body">
                                         <h6 className="card-title">{item.title}</h6>
                                         <div className='card-bottom mt-3'>
-                                          <a href={item.link} className="btn btn-primary btn-sm float-end" target="_blank" rel="noreferrer">Go to web <i className="fa-solid fa-arrow-up-right-from-square"></i></a>
+                                          <a href={item.link} className={"btn btn-sm float-end " + (vars.dark_mode ? 'btn-light' : 'btn-primary')} target="_blank" rel="noreferrer">Go to web <i className="fa-solid fa-arrow-up-right-from-square"></i></a>
                                           <small className="card-text site">{item.site.name}</small>
                                         </div>
                                       </div>

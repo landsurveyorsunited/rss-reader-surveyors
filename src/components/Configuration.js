@@ -51,13 +51,13 @@ export const Configuration = () => {
 
                                         { feed.active ? (
                                             <>
-                                                <a href={feed.url} className='text text-primary mr-3 fw-bold' target="_blank" rel="noreferrer" title="See XML Feed">{feed.name}</a>
-                                                <button className='btn btn-outline-danger btn-sm' onClick={() => toggleFeed (feed.id)}>Turn OFF</button> 
+                                                <a href={feed.url} className={'text mr-3 fw-bold ' + (vars.dark_mode ? '' : 'text-primary')} target="_blank" rel="noreferrer" title="See XML Feed">{feed.name}</a>
+                                                <button className={'btn btn-sm ' + (vars.dark_mode ? 'btn-outline-light' : 'btn-outline-danger')} onClick={() => toggleFeed (feed.id)}>Turn OFF</button> 
                                             </>
                                         ) : (
                                             <>
-                                                <a href={feed.url} className='text text-primary mr-3' target="_blank" rel="noreferrer" title="See XML Feed">{feed.name}</a>
-                                                <button className='btn btn-outline-success btn-sm' onClick={() => toggleFeed (feed.id)} >Turn ON</button>
+                                                <a href={feed.url} className={'text mr-3 ' + (vars.dark_mode ? '' : 'text-primary')} target="_blank" rel="noreferrer" title="See XML Feed">{feed.name}</a>
+                                                <button className={'btn btn-sm ' + (vars.dark_mode ? 'btn-outline-light' : 'btn-outline-success')} onClick={() => toggleFeed (feed.id)} >Turn ON</button>
                                             </>
                                         )}
                                     </div>
@@ -75,7 +75,7 @@ export const Configuration = () => {
                     <div className='col-md-4 text-center offset-md-4'>
                         {
                             vars.dark_mode ? (
-                                <button className='btn btn-outline-dark btn-lg' onClick={ () => toggleDarkMode ()}>Turn ON Light Mode</button>
+                                <button className='btn btn-outline-light btn-lg' onClick={ () => toggleDarkMode ()}>Turn ON Light Mode</button>
                             ) : (
                                 <button className='btn btn-outline-dark btn-lg' onClick={ () => toggleDarkMode ()}>Turn ON Dark Mode</button>
                             )

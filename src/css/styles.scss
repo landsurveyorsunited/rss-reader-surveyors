@@ -1,3 +1,5 @@
+$gray_darkmode: rgba(255, 255, 255, 0.55);
+
 .header {
 
     .buttons-container {
@@ -165,7 +167,7 @@
     .rss-sources {
         
         .item {
-            border-bottom: solid 1px gray;
+            border-bottom: solid 1px $gray_darkmode;
             
             a {
                 text-decoration: none;
@@ -174,7 +176,70 @@
     }
 }
 
+.dark-mode {
 
+    background-color: black;
+    color: white;
+
+    .header nav {
+        background-color: black!important;
+        border-bottom: solid 1px $gray_darkmode;
+    }
+
+    .footer {
+        border-top: solid 1px $gray_darkmode!important;
+        a {
+            color: white!important;
+        }
+    }
+
+    .rss-news-feed {
+        .card {
+            background-color: black;
+            border: solid 1px $gray_darkmode;
+
+            .bookmark {
+                color: $gray_darkmode;
+                &:hover, &.selected {
+                    color: gold;
+                }
+            }
+        }
+
+        select {
+            background-color: black;
+            color: white;
+            border: solid 1px $gray_darkmode;
+        }
+    }
+
+    .configuration {
+        .rss-sources {
+            a {
+                color: white!important;
+            }
+        }
+    }
+
+    .pagination {
+        
+        button.page-link {
+            background-color: black;
+            color: white;
+
+            &.active {
+                background-color: white;
+                color: black;
+                border-color: white;
+            }
+        }
+        .page-item.disabled {
+            .page-link {
+                background-color: rgba(255, 255, 255, 0.55);
+            }
+        }
+    }
+}
 
 @import "~react-image-gallery/styles/scss/image-gallery.scss";
 @import "../../node_modules/bootstrap/scss/bootstrap";
