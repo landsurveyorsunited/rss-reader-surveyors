@@ -25,11 +25,9 @@ export const PhotosFeed = () => {
         let id            = 'wta-' + index;
         let img_obj       = item.getElementsByTagName ("media:thumbnail")[0];
         let url           = img_obj.getAttribute ('url');
-        let alt           = item.querySelector ('title').text;
-
-        let link = item.querySelector ("link").textContent;
+        let title         = item.querySelector ('title').text;
         
-        return {id, originalAlt: alt, original: url, thumbnail: url};
+        return {id, originalTitle: title, originalAlt: title, original: url, thumbnail: url};
       });
 
       setAllPhotos (all_photos_new);
@@ -42,7 +40,6 @@ export const PhotosFeed = () => {
 
   useEffect ( () => {
 
-    console.log (all_photos);
     setLoading (false);
   }, [all_photos]);
 
@@ -60,7 +57,7 @@ export const PhotosFeed = () => {
           )
       }
       {
-          ! loading && all_photos.length > 0 && (<ImageGallery items={all_photos} showIndex={true} showThumbnails={false} showPlayButton={false}/>)
+          ! loading && all_photos.length > 0 && (<ImageGallery items={all_photos} showIndex={true} showThumbnails={false} showPlayButton={false} disableThumbnailScroll={true} disableThumbnailSwipe={true}/>)
       }
     </div>
   )
