@@ -27,9 +27,9 @@ export const NewsFeed = () => {
 
   useEffect (() => {
 
-    const cors_proxy = process.env.CORS_PROXY  || 'http://localhost';
-    const cors_port = process.env.CORS_PORT || 8080;
-    
+    const cors_proxy = process.env.REACT_APP_CORS_PROXY  || 'http://localhost';
+    const cors_port = process.env.REACT_APP_CORS_PORT || 8080;
+
     if (initial_load) {
       const getAllFeeds = async () => {
       
