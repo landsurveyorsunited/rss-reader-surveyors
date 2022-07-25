@@ -27,15 +27,16 @@ export const NewsFeed = () => {
 
   useEffect (() => {
 
+    const cors_proxy = process.env.CORS_PROXY  || 'http://localhost';
+    const cors_port = process.env.CORS_PORT || 8080;
+    
     if (initial_load) {
       const getAllFeeds = async () => {
       
-        let cors_prefix = '';
-        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") cors_prefix = "http://localhost:8080/";
-
+        
         vars.feeds?.filter (feed => feed.active).map (async (site, index) => {
 
-          const content_text   = await fetch(cors_prefix + site.url).then(r => r.text());
+          const content_text   = await fetch(cors_proxy + ':' + cors_port + '/' + site.url).then(r => r.text());
           const content_xmlDoc = new DOMParser().parseFromString (content_text, "text/xml");
 
           const partial_items = Array.from (content_xmlDoc.querySelectorAll ("item")).map ( (item, index2) => {
