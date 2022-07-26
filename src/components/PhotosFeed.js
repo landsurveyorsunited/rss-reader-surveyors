@@ -11,13 +11,13 @@ export const PhotosFeed = () => {
   const [all_photos, setAllPhotos] = useState ([]);
   
   useEffect (() => {
+
+    const cors_proxy = process.env.REACT_APP_CORS_PROXY  || 'http://localhost';
+    const cors_port = process.env.REACT_APP_CORS_PORT || 8080;
     
     const getAllPhotos = async () => {
     
-      let cors_prefix = '';
-      if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") cors_prefix = "http://localhost:8080/";
-
-      const text   = await fetch(cors_prefix + feed_url_photos_WTA).then(r => r.text());
+      const text   = await fetch(cors_proxy + ':' + cors_port + '/' + feed_url_photos_WTA).then(r => r.text());
       const xmlDoc = new DOMParser().parseFromString (text, "text/xml");
       
       const all_photos_new = Array.from (xmlDoc.querySelectorAll ("item")).map ( (item, index) => {
