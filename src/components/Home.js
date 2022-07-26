@@ -11,7 +11,7 @@ export const Home = () => {
           <div className='row'>
             <div className='col-md-12'>
               <h1 className='mb-0'>
-                Wellcome to RSS Tennis Feed, a Tennis RSS feed reader. 
+                Welcome to RSS Tennis Feed, a Tennis RSS feed reader. 
               </h1>
               <h4>
                 Here you will be able to find the last news & photos about tennis.
@@ -46,7 +46,7 @@ export const Home = () => {
               <p>
                 You can find more information about <a href="https://www.twitch.tv/mouredev"  target="_blank" rel="noreferrer">@mourdev</a>'s monthly challenges in <a href="https://github.com/mouredev/Monthly-App-Challenge-2022" target="_blank" rel="noreferrer">GitHub</a> and in his partner <a href="https://go.rviewer.io/dev-lector-rss-es/?utm_source=mouredev&utm_medium=github_repo&utm_campaign=rss_reader_mouredev" target="_blank" rel="noreferrer">rviewer</a>.
                 <br />
-                Special thanks for <a href="https://github.com/messier31" target="_blank" rel="noreferrer">@messier31</a> for letting me use his proxy <a href="https://fast-dawn-89938.herokuapp.com/https://ftw.usatoday.com/category/tennis/feed" target="_blank" rel="noreferrer">cors-anywhere</a>.
+                Special thanks to <a href="https://github.com/messier31" target="_blank" rel="noreferrer">@messier31</a> for letting me use his proxy <a href="https://fast-dawn-89938.herokuapp.com/https://ftw.usatoday.com/category/tennis/feed" target="_blank" rel="noreferrer">cors-anywhere</a>.
               </p>
               <p>
                 Happy Coding!
