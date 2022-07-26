@@ -17,7 +17,7 @@ export const PhotosFeed = () => {
     
     const getAllPhotos = async () => {
     
-      const text   = await fetch(cors_proxy + ':' + cors_port + '/' + feed_url_photos_WTA).then(r => r.text());
+      const text   = await fetch(cors_proxy + ':' + cors_port + '/' + feed_url_photos_WTA).then(r => r.text()).catch ( err => { console.error (err); setAllPhotos ([]); setLoading (false); });
       const xmlDoc = new DOMParser().parseFromString (text, "text/xml");
       
       const all_photos_new = Array.from (xmlDoc.querySelectorAll ("item")).map ( (item, index) => {
@@ -31,18 +31,12 @@ export const PhotosFeed = () => {
       });
 
       setAllPhotos (all_photos_new);
-
+      setLoading (false);
     };
     
     getAllPhotos ();
   }, [])
   
-
-  useEffect ( () => {
-
-    setLoading (false);
-  }, [all_photos]);
-
 
   return (
     <div className='rss-photos-feed mt-5'>
