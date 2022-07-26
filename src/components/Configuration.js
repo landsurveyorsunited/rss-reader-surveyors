@@ -11,6 +11,7 @@ export const Configuration = () => {
             if ( feed.id === id) {
                 return {
                     ...feed,
+                    loaded: (! feed.active) ? false : true,
                     active: ! feed.active
                 }
             }

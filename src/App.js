@@ -16,15 +16,21 @@ function App () {
 
     let local_vars = {
       feeds: [
-        {id: 'usa', url: 'https://ftw.usatoday.com/category/tennis/feed', name: 'USA Today - Tennis', 'active': true, 'loaded': false},
-        {id: 'espn', url: 'https://www.espn.com/espn/rss/tennis/news/', name: 'ESPN - Tennis', 'active': true, 'loaded': false},
-        {id: 'univ', url: 'https://blog.universaltennis.com/feed/', name: 'Universal Tennis', 'active': true, 'loaded': false},
-        {id: 'aus', url: 'https://feeds.feedburner.com/tennis-australia', name: 'Tennis Australia', 'active': true, 'loaded': false}
+        {id: 'usa', url: 'https://ftw.usatoday.com/category/tennis/feed', name: 'USA Today - Tennis', 'active': true, 'items': [], 'loaded': false},
+        {id: 'espn', url: 'https://www.espn.com/espn/rss/tennis/news/', name: 'ESPN - Tennis', 'active': true, 'items': [], 'loaded': false},
+        {id: 'univ', url: 'https://blog.universaltennis.com/feed/', name: 'Universal Tennis', 'active': true, 'items': [], 'loaded': false},
+        {id: 'aus', url: 'https://feeds.feedburner.com/tennis-australia', name: 'Tennis Australia', 'active': true, 'items': [], 'loaded': false}
       ],
       dark_mode: false
     };
 
-    if (localStorage.getItem ('tennis-rss') !== null) local_vars = JSON.parse (localStorage.getItem ('tennis-rss'));
+    if (localStorage.getItem ('tennis-rss') !== null) {
+      let local_vars_memory = JSON.parse (localStorage.getItem ('tennis-rss'));
+      local_vars = {
+        ...local_vars_memory,
+        feeds: local_vars_memory?.feeds?.map (feed => { return {...feed, loaded: false}}),
+      }
+    }
 
     setVars (local_vars);
   }, []);
