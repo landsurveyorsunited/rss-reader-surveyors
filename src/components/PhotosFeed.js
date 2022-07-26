@@ -5,15 +5,15 @@ import ImageGallery from 'react-image-gallery'
 
 export const PhotosFeed = () => {
 
-  const feed_url_photos_WTA = 'https://www.wtatennis.com/rss-photos.xml';
-
+  
   const [loading, setLoading]      = useState (true);
   const [all_photos, setAllPhotos] = useState ([]);
   
   useEffect (() => {
-
-    const cors_proxy = process.env.REACT_APP_CORS_PROXY  || 'http://localhost';
-    const cors_port = process.env.REACT_APP_CORS_PORT || 8080;
+    
+    const feed_url_photos_WTA = 'https://www.wtatennis.com/rss-photos.xml';
+    const cors_proxy          = process.env.REACT_APP_CORS_PROXY  || 'http://localhost';
+    const cors_port           = process.env.REACT_APP_CORS_PORT || 8080;
     
     const getAllPhotos = async () => {
     

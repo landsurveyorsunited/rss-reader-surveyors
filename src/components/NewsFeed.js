@@ -15,92 +15,109 @@ export const NewsFeed = () => {
   const [total_pages, setTotalPages]                = useState (0);
   const [show_only_bookmarks, setShowOnlyBookmarks] = useState (false);
   
-  const {vars, initial_load, setInitialLoad} = useContext (FeedRSSContext);
+  const {vars, setVars} = useContext (FeedRSSContext);
+
 
   useEffect ( () => {
-    setInitialLoad (true);
-  }, [setInitialLoad]);
+    
+    const cors_proxy = process.env.REACT_APP_CORS_PROXY  || 'http://localhost';
+    const cors_port = process.env.REACT_APP_CORS_PORT || 8080;
 
-  useEffect ( () => {
-    setInitialLoad (true);
-  }, [vars, setInitialLoad]);
+    if (vars?.feeds?.length > 0) {
+
+      Promise.all (
+        vars?.feeds?.map (feed => fetch (cors_proxy + ':' + cors_port + '/' + feed.url)
+        .then (resp => resp.text ()).then (resp => {
+
+          const xml       = new DOMParser ().parseFromString (resp, "text/xml");
+          const items_raw = Array.from (xml.querySelectorAll ("item"));
+          const items     = getFeedsFromItems (items_raw);
+          
+
+          return {...feed, items}; 
+        })
+        )
+        ).then (feeds => feeds.map (feed => {
+
+          return {};
+        }).then (resp => console.log (resp))
+      );
+    }
+  }, [vars.feeds]);
 
   useEffect (() => {
 
     const cors_proxy = process.env.REACT_APP_CORS_PROXY  || 'http://localhost';
     const cors_port = process.env.REACT_APP_CORS_PORT || 8080;
 
-    if (initial_load) {
-      const getAllFeeds = async () => {
-      
-        
-        vars.feeds?.filter (feed => feed.active).map (async (site, index) => {
-
-          const content_text   = await fetch(cors_proxy + ':' + cors_port + '/' + site.url).then(r => r.text());
-          const content_xmlDoc = new DOMParser().parseFromString (content_text, "text/xml");
-
-          const partial_items = Array.from (content_xmlDoc.querySelectorAll ("item")).map ( (item, index2) => {
-            
-            let id = site.id + '-' + index2;
+    const getAllFeeds = async () => {
     
-            let title = item.querySelector ("title").textContent;
-            
-            let img_url = '', img_alt = '';
-            if (site.id === 'usa') {
+      vars.feeds?.filter (feed => feed.active).map (async (site, index) => {
 
-              let img_obj = item.getElementsByTagName ("media:content");
-              if (img_obj[0]) {
-                img_url     = img_obj[0].getAttribute ('url');
-                img_alt     = title;
-              }
-              
-            } else if (site.id === 'espn') {
+        const content_text   = await fetch(cors_proxy + ':' + cors_port + '/' + site.url).then(r => r.text());
+        const content_xmlDoc = new DOMParser().parseFromString (content_text, "text/xml");
 
-              let img_obj = item.querySelector ("enclosure");
-              img_url     = img_obj.getAttribute ('url');
-              img_alt     = item.querySelector ("description").textContent;
-
-            } else if (site.id === 'univ') {
-
-              let description_html = item.querySelector ("description").textContent;
-              let matches          = description_html.match (/<img[^>]* src="([^"]*)\?.*"[^>]* alt="([^"]*)"[^>]*>/);
-              img_url     = matches[1];
-              img_alt     = matches[2] ? matches[2] : title;
-
-            } else if (site.id === 'aus') {
-
-              let description_html = item.querySelector ("description").textContent;
-              let matches          = description_html.match (/<img[^>]* src="([^"]*)\??.*"[^>]* alt="([^"]*)"[^>]* srcset="([^"]*)"[^>]*>/);
-              
-              img_url     = matches[1];
-              img_alt     = matches[2] ? matches[2] : title;
-              
-              if (matches[3]) {
-
-                let images_by_size = matches[3].trim().split (', ').map (value => value.split (" "));
-                let bigger_image   = images_by_size.sort ( (a,b) => parseInt(a[1].slice(0,-1)) > parseInt(b[1].slice(0,-1)) ? -1 : 1).shift ();
-                img_url = bigger_image[0];
-              }
-
-            }
-            let link = item.querySelector ("link").textContent;
-    
-            let date          = item.querySelector ("pubDate").textContent;
-            let date_moment   = moment (date).utc ();
-            let date_modified = date_moment.format ('MM/DD/YYYY HH:mm') + ' UTC';
-    
-            return {id, title, link, img: {url: img_url, alt: img_alt}, date_moment, date: date_modified, site, bookmark: false};
-          });
+        const partial_items = Array.from (content_xmlDoc.querySelectorAll ("item")).map ( (item, index2) => {
           
-          setAllItems (current => [...current, ...partial_items].sort ((a, b) => a.date_moment > b.date_moment ? -1 : 1));
-        });
+          let id = site.id + '-' + index2;
+  
+          let title = item.querySelector ("title").textContent;
+          
+          let img_url = '', img_alt = '';
+          if (site.id === 'usa') {
 
-        setInitialLoad (false);
-      };
-      
-      getAllFeeds ();
-    }
-  }, [initial_load, vars, setInitialLoad]);
+            let img_obj = item.getElementsByTagName ("media:content");
+            if (img_obj[0]) {
+              img_url     = img_obj[0].getAttribute ('url');
+              img_alt     = title;
+            }
+            
+          } else if (site.id === 'espn') {
+
+            let img_obj = item.querySelector ("enclosure");
+            img_url     = img_obj.getAttribute ('url');
+            img_alt     = item.querySelector ("description").textContent;
+
+          } else if (site.id === 'univ') {
+
+            let description_html = item.querySelector ("description").textContent;
+            let matches          = description_html.match (/<img[^>]* src="([^"]*)\?.*"[^>]* alt="([^"]*)"[^>]*>/);
+            img_url     = matches[1];
+            img_alt     = matches[2] ? matches[2] : title;
+
+          } else if (site.id === 'aus') {
+
+            let description_html = item.querySelector ("description").textContent;
+            let matches          = description_html.match (/<img[^>]* src="([^"]*)\??.*"[^>]* alt="([^"]*)"[^>]* srcset="([^"]*)"[^>]*>/);
+            
+            img_url     = matches[1];
+            img_alt     = matches[2] ? matches[2] : title;
+            
+            if (matches[3]) {
+
+              let images_by_size = matches[3].trim().split (', ').map (value => value.split (" "));
+              let bigger_image   = images_by_size.sort ( (a,b) => parseInt(a[1].slice(0,-1)) > parseInt(b[1].slice(0,-1)) ? -1 : 1).shift ();
+              img_url = bigger_image[0];
+            }
+
+          }
+          let link = item.querySelector ("link").textContent;
+  
+          let date          = item.querySelector ("pubDate").textContent;
+          let date_moment   = moment (date).utc ();
+          let date_modified = date_moment.format ('MM/DD/YYYY HH:mm') + ' UTC';
+  
+          return {id, title, link, img: {url: img_url, alt: img_alt}, date_moment, date: date_modified, site, bookmark: false};
+        });
+        
+        setAllItems (current => [...current, ...partial_items].sort ((a, b) => a.date_moment > b.date_moment ? -1 : 1));
+      });
+
+      setLoading (false);
+    };
+    
+    getAllFeeds ();
+  }, [vars, setVars]);
   
  
   useEffect ( () => {
@@ -132,6 +149,63 @@ export const NewsFeed = () => {
   }, [items_in_view, items_in_view]);
 
 
+  const getItemsFromRaw = (items_raw) => {
+
+    return items_raw.map ( (item, index2) => {
+          
+      let id = site.id + '-' + index2;
+
+      let title = item.querySelector ("title").textContent;
+      
+      let img_url = '', img_alt = '';
+      if (site.id === 'usa') {
+
+        let img_obj = item.getElementsByTagName ("media:content");
+        if (img_obj[0]) {
+          img_url     = img_obj[0].getAttribute ('url');
+          img_alt     = title;
+        }
+        
+      } else if (site.id === 'espn') {
+
+        let img_obj = item.querySelector ("enclosure");
+        img_url     = img_obj.getAttribute ('url');
+        img_alt     = item.querySelector ("description").textContent;
+
+      } else if (site.id === 'univ') {
+
+        let description_html = item.querySelector ("description").textContent;
+        let matches          = description_html.match (/<img[^>]* src="([^"]*)\?.*"[^>]* alt="([^"]*)"[^>]*>/);
+        img_url     = matches[1];
+        img_alt     = matches[2] ? matches[2] : title;
+
+      } else if (site.id === 'aus') {
+
+        let description_html = item.querySelector ("description").textContent;
+        let matches          = description_html.match (/<img[^>]* src="([^"]*)\??.*"[^>]* alt="([^"]*)"[^>]* srcset="([^"]*)"[^>]*>/);
+        
+        img_url     = matches[1];
+        img_alt     = matches[2] ? matches[2] : title;
+        
+        if (matches[3]) {
+
+          let images_by_size = matches[3].trim().split (', ').map (value => value.split (" "));
+          let bigger_image   = images_by_size.sort ( (a,b) => parseInt(a[1].slice(0,-1)) > parseInt(b[1].slice(0,-1)) ? -1 : 1).shift ();
+          img_url = bigger_image[0];
+        }
+
+      }
+      let link = item.querySelector ("link").textContent;
+
+      let date          = item.querySelector ("pubDate").textContent;
+      let date_moment   = moment (date).utc ();
+      let date_modified = date_moment.format ('MM/DD/YYYY HH:mm') + ' UTC';
+
+      return {id, title, link, img: {url: img_url, alt: img_alt}, date_moment, date: date_modified, site, bookmark: false};
+    })
+  };
+
+
   const toggleBookmark = (id) => {
     
     setAllItems (prev => prev.map (oldItem => {
@@ -160,17 +234,17 @@ export const NewsFeed = () => {
   return (
     <>
       {
-          (initial_load || loading) && (
+          loading && (
             <Loading />
           )
       }
       {
-          (! initial_load && ! loading) && items_in_view.length <= 0 && (
+          ! loading && items_in_view.length <= 0 && (
             <NoItems />
           )
       }
       {
-          (! initial_load && ! loading) && items_in_view.length > 0 && (
+          ! loading && items_in_view.length > 0 && (
             <>
               <div className='rss-news-feed mt-5'>
                 <div className='container-fluid'>
@@ -229,7 +303,7 @@ export const NewsFeed = () => {
           )
       }
       {
-        (! initial_load && ! loading) && (total_pages > 1)  && (
+        ! loading && (total_pages > 1)  && (
           <div className='container-md mt-5'>
             <div className="row">
                 <div className="col-12">
