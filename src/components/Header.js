@@ -13,6 +13,7 @@ export const Header = () => {
           </button>
           <div className="collapse navbar-collapse justify-content-between align-items-center buttons-container" id="navbarRSSFeed">
             <div className="navbar-nav">
+              <NavLink to="/home" className={({isActive}) => ('nav-link ' + (isActive ? "active" : ''))}>Home</NavLink>
               <NavLink to="/news-feed" className={({isActive}) => ('nav-link ' + (isActive ? "active" : ''))}>News</NavLink>
               <NavLink to="/photos-feed" className={({isActive}) => ('nav-link ' + (isActive ? "active" : ''))}>Image Gallery</NavLink>
             </div>

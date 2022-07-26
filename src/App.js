@@ -56,7 +56,7 @@ function App () {
           <Route path="/photos-feed" element={<PhotosFeed />} />
           <Route path="/configuration" element={<Configuration />} />
           <Route path="/home" element={<Home />} />
-          <Route path="*" element={<Navigate to="/news-feed" replace/>} />
+          <Route path="*" element={<Navigate to="/home" replace/>} />
         </Routes>
       </BrowserRouter>
       <Footer />

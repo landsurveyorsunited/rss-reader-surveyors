@@ -56,6 +56,21 @@ $gray_darkmode: rgba(255, 255, 255, 0.55);
     }
 }
 
+.home {
+    
+    font-size: 1.5em;
+    text-align: center;
+
+    a {
+        text-decoration: none;
+    }
+
+    ul {
+        list-style: none;
+        padding-left: 0px;
+    }
+}
+
 .rss-news-feed {
     
     min-height: 80vh;
@@ -191,6 +206,14 @@ $gray_darkmode: rgba(255, 255, 255, 0.55);
         a {
             color: white!important;
         }
+    }
+
+    .home {
+    
+        a {
+            color: white;
+        }
+    
     }
 
     .rss-news-feed {
