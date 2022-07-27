@@ -10,10 +10,8 @@ import { useEffect, useState } from "react";
 
 function App () {
 
-  const [vars, setVars] = useState ({});
-  
-  useEffect ( () => {
-
+  const [vars, setVars] = useState ( () => {
+    
     let local_vars = {
       feeds: [
         {id: 'usa', url: 'https://ftw.usatoday.com/category/tennis/feed', name: 'USA Today - Tennis', 'active': true, 'items': [], 'loaded': false},
@@ -23,7 +21,7 @@ function App () {
       ],
       dark_mode: false
     };
-
+    
     if (localStorage.getItem ('tennis-rss') !== null) {
       let local_vars_memory = JSON.parse (localStorage.getItem ('tennis-rss'));
       local_vars = {
@@ -31,9 +29,8 @@ function App () {
         feeds: local_vars_memory?.feeds?.map (feed => { return {...feed, loaded: false}}),
       }
     }
-
-    setVars (local_vars);
-  }, []);
+    return local_vars;
+  });
 
   useEffect ( () => {
 

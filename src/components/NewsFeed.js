@@ -7,6 +7,7 @@ import { FeedRSSContext } from './context/FeedRSSContext';
 export const NewsFeed = () => {
 
   const [loading, setLoading]                       = useState (true);
+  const [initial_load, setInitialLoad]              = useState (false);
   const [all_items, setAllItems]                    = useState ([]);
   const [items_filtered, setItemsFiltered]          = useState ([]);
   const [items_in_view, setItemsInView]             = useState ([]);
@@ -18,14 +19,7 @@ export const NewsFeed = () => {
   const {vars, setVars} = useContext (FeedRSSContext);
 
   useEffect ( () => {
-    console.log ('entracomponente');
     
-  }, []);
-
-
-  useEffect ( () => {
-    console.log ('useeffect1');
-
     setLoading (true);
     
     const cors_proxy = process.env.REACT_APP_CORS_PROXY  || 'http://localhost';
@@ -53,15 +47,15 @@ export const NewsFeed = () => {
         }, []).sort ( (a, b) => a.date_moment > b.date_moment ? -1 : 1);
         
         setAllItems (sorted_items);
+        setInitialLoad (true);
         
-        /*
         setVars ({
           ...vars,
           feeds
         });
-        */
+
       });
-    } /*else if (vars?.feeds?.length > 0) {
+    } else if (vars?.feeds?.length > 0) {
       
       const sorted_items = vars.feeds.filter (feed => feed.active).reduce ( (a, b) => {
         if (Array.isArray (a.items)) return a.items.concat (b.items);
@@ -69,34 +63,40 @@ export const NewsFeed = () => {
       }, []).sort ( (a, b) => a.date_moment > b.date_moment ? -1 : 1);
       
       setAllItems (sorted_items);
-    }*/
-  }, [vars]);
-    
-  useEffect ( () => {
-    
-    console.log ('useeffect2');
-    setLoading (true);
-    setPage (1);
-    if (show_only_bookmarks) setItemsFiltered (all_items.filter (item => item.bookmark));
-    else setItemsFiltered (all_items);
-  }, [show_only_bookmarks, all_items]);
-  
-  
-  useEffect ( () => {
-    
-    console.log ('useeffect3');
-    setLoading (true);
-    if (Array.isArray (items_filtered)) {
-      
-      setTotalPages (Math.ceil (items_filtered.length / results_by_page));
-      setItemsInView (items_filtered.slice ( (page -1) * results_by_page, page * results_by_page));
-    } else {
-      setTotalPages (0);
-      setItemsInView ([]);
+      setInitialLoad (true);
     }
-    setLoading (false);
+  }, [vars, setVars, initial_load]);
     
-  }, [items_filtered, results_by_page, page]);
+
+  useEffect ( () => {
+    
+    if (initial_load) {
+
+      setLoading (true);
+      setPage (1);
+      if (show_only_bookmarks) setItemsFiltered (all_items.filter (item => item.bookmark));
+      else setItemsFiltered (all_items);
+    }
+  }, [show_only_bookmarks, all_items, initial_load]);
+  
+  
+  useEffect ( () => {
+    
+    if (initial_load) {
+
+      setLoading (true);
+      if (Array.isArray (items_filtered)) {
+        
+        setTotalPages (Math.ceil (items_filtered.length / results_by_page));
+        setItemsInView (items_filtered.slice ( (page -1) * results_by_page, page * results_by_page));
+      } else {
+        setTotalPages (0);
+        setItemsInView ([]);
+      }
+      setLoading (false);
+    }
+    
+  }, [items_filtered, results_by_page, page, initial_load]);
 
 
   const getItemsFromRaw = (feed, items_raw) => {
@@ -118,9 +118,13 @@ export const NewsFeed = () => {
         
       } else if (feed.id === 'espn') {
 
-        let img_obj = item.querySelector ("enclosure");
-        img_url     = img_obj.getAttribute ('url');
-        img_alt     = item.querySelector ("description").textContent;
+        if (item.querySelector ("enclosure")) {
+
+          let img_obj = item.querySelector ("enclosure");
+          
+          img_url     = img_obj.getAttribute ('url');
+          img_alt     = item.querySelector ("description").textContent;
+        }
 
       } else if (feed.id === 'univ') {
 
