@@ -3,7 +3,7 @@ import { PhotosFeed } from "./components/PhotosFeed";
 import { Footer } from "./components/Footer";
 import { NewsFeed } from "./components/NewsFeed";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { Home } from "./components/Home";
+import { About } from "./components/About";
 import { Configuration } from "./components/Configuration";
 import { FeedRSSContext } from "./components/context/FeedRSSContext";
 import { useEffect, useState } from "react";
@@ -52,8 +52,8 @@ function App () {
           <Route path="/news-feed" element={<NewsFeed />} />
           <Route path="/photos-feed" element={<PhotosFeed />} />
           <Route path="/configuration" element={<Configuration />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="*" element={<Navigate to="/home" replace/>} />
+          <Route path="/about" element={<About />} />
+          <Route path="*" element={<Navigate to="/news-feed" replace/>} />
         </Routes>
       </BrowserRouter>
       <Footer />

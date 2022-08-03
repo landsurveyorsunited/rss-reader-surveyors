@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { Link } from 'react-router-dom';
 import { FeedRSSContext } from './context/FeedRSSContext'
 
-export const Home = () => {
+export const About = () => {
 
   const {vars} = useContext (FeedRSSContext);
   return (
