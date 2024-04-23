@@ -10,13 +10,13 @@ export const Footer = () => {
       <div className='container-fluid container-md'>
         <div className='row my-4 align-items-center'>
           <div className={"col-12 col-md-8 text " + (vars.dark_mode ? '' : 'text-primary') } >
-            RSS Tennis Feed - Developed by @rafasanabria1
+            Land Surveyors United Community RSS Reader
           </div>
 
           <div className="col-12 col-md-4 icons text-primary">
-            <a className="" href="https://twitter.com/rafasanabria1"  target="_blank" rel="noreferrer"><i className="fa-brands fa-twitter fa-2x"></i></a>
-            <a className=" ms-3" href="https://github.com/rafasanabria1"  target="_blank" rel="noreferrer"><i className="fa-brands fa-github fa-2x"></i></a>
-            <a className=" ms-3" href="https://www.linkedin.com/in/rafasanabria1/" target="_blank" rel="noreferrer"><i className="fa-brands fa-linkedin-in fa-2x"></i></a>
+            <a className="" href="https://twitter.com/landsurveyorsU"  target="_blank" rel="noreferrer"><i className="fa-brands fa-twitter fa-2x"></i></a>
+            <a className=" ms-3" href="https://landsurveyorsunited.com"  target="_blank" rel="noreferrer"><i className="fa-brands fa-github fa-2x"></i></a>
+            <a className=" ms-3" href="https://www.linkedin.com/groups/3935739/" target="_blank" rel="noreferrer"><i className="fa-brands fa-linkedin-in fa-2x"></i></a>
           </div>
         </div>
       </div>
