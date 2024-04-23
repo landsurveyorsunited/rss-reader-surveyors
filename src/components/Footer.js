@@ -10,7 +10,7 @@ export const Footer = () => {
       <div className='container-fluid container-md'>
         <div className='row my-4 align-items-center'>
           <div className={"col-12 col-md-8 text " + (vars.dark_mode ? '' : 'text-primary') } >
-            Land Surveyors United Community RSS Reader
+            Land Surveyors United Community RSS Reader V1
           </div>
 
           <div className="col-12 col-md-4 icons text-primary">
