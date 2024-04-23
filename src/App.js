@@ -14,8 +14,8 @@ function App () {
     
     let local_vars = {
       feeds: [
-        {id: 'usa', url: 'https://feeds.feedburner.com/smarketplace/latest', name: 'Land Surveyor Jobs', 'active': true, 'items': [], 'loaded': false},
-        {id: 'espn', url: 'https://www.espn.com/espn/rss/tennis/news/', name: 'ESPN - Tennis', 'active': true, 'items': [], 'loaded': false},
+        {id: 'usa', url: 'https://feeds.feedburner.com/smarketplace/latest', name: 'Land Surveyor Market', 'active': true, 'items': [], 'loaded': false},
+        {id: 'espn', url: 'https://feeds.feedburner.com/surveyingjobsmegafeed', name: 'Land Surveyor Jobs', 'active': true, 'items': [], 'loaded': false},
         {id: 'univ', url: 'https://blog.universaltennis.com/feed/', name: 'Universal Tennis', 'active': true, 'items': [], 'loaded': false},
         {id: 'aus', url: 'https://feeds.feedburner.com/tennis-australia', name: 'Tennis Australia', 'active': true, 'items': [], 'loaded': false}
       ],
