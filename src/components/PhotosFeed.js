@@ -11,7 +11,7 @@ export const PhotosFeed = () => {
   
   useEffect (() => {
     
-    const feed_url_photos_WTA = 'https://www.wtatennis.com/rss-photos.xml';
+    const feed_url_photos_WTA = 'https://landsurveyorsunited.com/photo/feed/all';
     const cors_proxy          = process.env.REACT_APP_CORS_PROXY  || 'http://localhost';
     const cors_port           = process.env.REACT_APP_CORS_PORT || 8080;
     
